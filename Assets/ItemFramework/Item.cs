@@ -3,13 +3,12 @@ using System.Collections;
 
 public class Item : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-	
+	public string Name { get; set; }
+
+
+	public virtual void Use()
+	{
+		
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
 }
