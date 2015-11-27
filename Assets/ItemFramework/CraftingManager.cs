@@ -5,9 +5,9 @@ public class CraftingManager : MonoBehaviour
 {
 	public List<CraftingRecipe> Recipes;
 
-	private CraftingManager instance;
+	private static CraftingManager instance;
 
-	public CraftingManager Instance
+	public static CraftingManager Instance
 	{
 		get
 		{
@@ -20,15 +20,10 @@ public class CraftingManager : MonoBehaviour
 		}
 	}
 
-	//	+ Recipes : List<CraftingRecipes>
-	//- instance : CraftingManager
-	//+ Instance() : CraftingManager
-
 	public void Register(CraftingRecipe recipe)
 	{
 		
 	}
 
 
-//		+ Register(recipe : CraftingRecipe) : void
 }
