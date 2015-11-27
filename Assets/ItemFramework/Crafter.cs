@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Crafter : MonoBehaviour
-{
-	public Container input;
-	public Container output;
+namespace ItemFramework {
+    public class Crafter : MonoBehaviour {
+        public Container input;
+        public Container output;
 
 
 	public ItemStack[] CraftRecipe(ItemStack[] incommingIngredients)

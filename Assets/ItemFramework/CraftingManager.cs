@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class CraftingManager : MonoBehaviour
-{
-	public List<CraftingRecipe> Recipes;
+namespace ItemFramework {
+    public class CraftingManager : MonoBehaviour {
+        public List<CraftingRecipe> Recipes;
 
 	private static CraftingManager instance;
 
@@ -20,10 +20,8 @@ public class CraftingManager : MonoBehaviour
 		}
 	}
 
-	public void Register(CraftingRecipe recipe)
-	{
-		
-	}
+        public void Register(CraftingRecipe recipe) {
 
+        }
 
 }
