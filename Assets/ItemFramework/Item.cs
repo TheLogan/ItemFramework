@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace ItemFramework {
-    public class Item : MonoBehaviour {
-
+    public class Item
+	{
+		
         public string Name { get; set; }
 
 

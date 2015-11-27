@@ -1,51 +1,65 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ItemFramework {
-    public class Crafter : MonoBehaviour {
-        public Container input;
-        public Container output;
-
-
-	public ItemStack[] CraftRecipe(ItemStack[] incommingIngredients)
+namespace ItemFramework
+{
+	public class Crafter : MonoBehaviour
 	{
-		var recipes = CraftingManager.Instance.Recipes;
-		
-		var selectedRecipes = new List<CraftingRecipe>();
-		foreach (var recipe in recipes)
+		public Container input;
+		public Container output;
+
+
+		public ItemStack[] CraftRecipe(Container incommingContainer)
 		{
-			var recipeIngredientsList = recipe.ingredients.ToList();
-			var viable = true;
-			foreach (var incommingIngredient in incommingIngredients)
+			//var incommingIngredients = incommingContainer.GetAll();
+            var recipes = CraftingManager.Instance.Recipes;
+
+			var selectedRecipes = new List<CraftingRecipe>();
+			foreach (var recipe in recipes)
 			{
-				if (!recipeIngredientsList.Contains(incommingIngredient))
+				var recipeIngredientsList = recipe.ingredients.ToList();
+				var viable = true;
+				foreach (var recipeIngredient in recipeIngredientsList)
 				{
-					viable = false;
+					var recipeIngredientType = recipeIngredient.Item.GetType();
+                    if (incommingContainer.Contains(recipeIngredientType) < recipeIngredient.Amount)
+                    {
+	                    viable = false;
+                    }
 				}
+				if (viable)
+					selectedRecipes.Add(recipe);
 			}
-			if(viable)
-				selectedRecipes.Add(recipe);
-		}
 
-		if (selectedRecipes.Count == 0)
-			return null;
+			if (selectedRecipes.Count == 0)
+				return null;
 
-
-		foreach (var selectedRecipe in selectedRecipes)
-		{
-			bool viable2 = true;
-			foreach (var ingredient in selectedRecipe.ingredients)
+			/*for (int i = 0; i < selectedRecipes.Count; i++)
 			{
-				if (!incommingIngredients.Contains(ingredient))
-					viable2 = false;
-			}
-			if (!viable2)
-				selectedRecipes.Remove(selectedRecipe);
-		}
+				var selectedRecipe = selectedRecipes[i];
+				bool viable2 = true;
+				foreach (var ingredient in selectedRecipe.ingredients)
+				{
+					if (!incommingIngredients.Contains(ingredient))
+						viable2 = false;
+				}
+				if (!viable2)
+				{
+					selectedRecipes.Remove(selectedRecipe);
+					i--;
+				}
+			}*/
 
-		var firstRecipe = selectedRecipes.FirstOrDefault();
-		return firstRecipe != null ? firstRecipe.output : null;
+			var firstRecipe = selectedRecipes.FirstOrDefault();
+			if (firstRecipe == null) return null;
+
+			foreach (ItemStack ingredient in firstRecipe.ingredients)
+			{
+				incommingContainer.Remove(ingredient);
+			}
+
+			return firstRecipe.output;
+		}
 	}
 }

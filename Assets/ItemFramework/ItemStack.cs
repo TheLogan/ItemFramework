@@ -1,36 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Guid = System.Guid;
 
 namespace ItemFramework {
-    public class ItemStack : MonoBehaviour {
-        private static Dictionary<Guid, ItemStack> _dict = new Dictionary<Guid, ItemStack>();
-
+    public class ItemStack
+	{
+        private static Dictionary<Guid, ItemStack> dict = new Dictionary<Guid, ItemStack>();
+		
         public static ItemStack GetItemStackById(Guid id) {
             if (id == Guid.Empty) {
                 Debug.LogWarning("Trying to get ItemStack with empty Guid");
             }
-            return _dict[id];
+            return dict[id];
         }
 
-        private Guid _id;
+        private Guid id;
 
         public Guid Id {
             get {
-                return _id;
+                return id;
             }
             set {
                 if (value != Guid.Empty) {
-                    if (_id != Guid.Empty) {
-                        _dict.Remove(_id);
+                    if (id != Guid.Empty) {
+                        dict.Remove(id);
                     }
-                    _dict.Add(value, this);
-                    _id = value;
+                    dict.Add(value, this);
+                    id = value;
                 }
             }
         }
         public Item Item { get; set; }
         public int Amount { get; set; }
-    }
+
+	    public ItemStack()
+	    {
+		    Id = Guid.NewGuid();
+	    }
+
+	    public ItemStack(Item item, int amount = 1)
+	    {
+		    Amount = amount;
+		    Item = item;
+			Id = Guid.NewGuid();
+		}
+
+	    public override bool Equals(object obj)
+	    {
+		    if (!(obj is ItemStack)) return false;
+		    var other = (ItemStack) obj;
+		    return Item.GetType() == other.Item.GetType() && Amount == other.Amount;
+	    }
+	}
 }
