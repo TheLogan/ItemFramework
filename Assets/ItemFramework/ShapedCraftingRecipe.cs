@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ShapedCraftingRecipe : MonoBehaviour
-{
+namespace ItemFramework {
+    public class ShapedCraftingRecipe : MonoBehaviour {
 
 
-	public int width;
+        public int width;
 
-	public bool CheckRecipe(ItemStack[] input)
-	{
-		return false;
-	}
+        public bool CheckRecipe(ItemStack[] input) {
+            return false;
+        }
+    }
 }
