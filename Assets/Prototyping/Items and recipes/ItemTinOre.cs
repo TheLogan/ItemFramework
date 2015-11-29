@@ -3,10 +3,11 @@
 public class ItemTinOre : Item
 {
 
-	public ItemTinOre()
-	{
-		Name = "Tin ore";
-	}
+    public ItemTinOre()
+    {
+        Name = "Tin ore";
+        StackSize = 32;
+    }
 
 
 }

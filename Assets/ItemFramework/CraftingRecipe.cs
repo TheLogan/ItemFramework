@@ -1,13 +1,39 @@
 ﻿namespace ItemFramework
 {
-	public abstract class CraftingRecipe
-	{
-		public ItemStack[] ingredients;
-		public ItemStack[] output;
+    public abstract class CraftingRecipe
+    {
+        private ItemStack[] ingredients;
+        private ItemStack[] output;
 
-		public bool CheckRecipe(ItemStack[] input)
-		{
-			return false; //FIXME write this
-		}
-	}
+        public ItemStack[] Ingredients
+        {
+            get
+            {
+                return ingredients;
+            }
+            set
+            {
+                ItemStack.LockMultiple(value);
+                ingredients = value;
+            }
+        }
+
+        public ItemStack[] Output
+        {
+            get
+            {
+                return output;
+            }
+            set
+            {
+                ItemStack.LockMultiple(value);
+                output = value;
+            }
+        }
+
+        public bool CheckRecipe(ItemStack[] input)
+        {
+            return false; //FIXME write this
+        }
+    }
 }
