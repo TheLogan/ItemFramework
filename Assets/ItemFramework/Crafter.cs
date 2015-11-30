@@ -16,26 +16,9 @@ namespace ItemFramework
 
 		public ItemStack[] CraftRecipe(Container incommingContainer, bool simulate = false)
 		{
-			//var incommingIngredients = incommingContainer.GetAll();
 			var recipes = GetRecipes();
-
-			var selectedRecipes = new List<CraftingRecipe>();
-			foreach (var recipe in recipes)
-			{
-				var recipeIngredientsList = recipe.Ingredients.ToList();
-				var viable = true;
-				foreach (var recipeIngredient in recipeIngredientsList)
-				{
-					var recipeIngredientType = recipeIngredient.Item.GetType();
-					if (incommingContainer.Contains(recipeIngredientType) < recipeIngredient.Amount)
-					{
-						viable = false;
-					}
-				}
-				if (viable)
-					selectedRecipes.Add(recipe);
-			}
-
+			var selectedRecipes = recipes.Where(recipe => recipe.CheckRecipe(incommingContainer)).ToList();
+			
 			if (selectedRecipes.Count == 0)
 				return null;
 

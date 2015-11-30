@@ -1,4 +1,7 @@
-﻿namespace ItemFramework
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace ItemFramework
 {
 	public abstract class CraftingRecipe
 	{
@@ -31,9 +34,22 @@
 			}
 		}
 
-		public virtual bool CheckRecipe(ItemStack[] input)
+		public virtual bool CheckRecipe(Container input)
 		{
-			return false; //FIXME write this
+			var inputStacks = input.GetAll();
+			var recipeIngredientsList = Ingredients.ToList();
+			foreach (var recipeIngredient in recipeIngredientsList)
+			{
+				var inputIngredient = inputStacks.FirstOrDefault(x => x.GetType() == recipeIngredient.GetType());
+				if (inputIngredient == null || inputIngredient.Amount < recipeIngredient.Amount)
+					return false;
+//				var recipeIngredientType = recipeIngredient.Item.GetType();
+//				if (inputContainer.Contains(recipeIngredientType) < recipeIngredient.Amount)
+//				{
+//					return false;
+//				}
+			}
+			return true;
 		}
 	}
 }

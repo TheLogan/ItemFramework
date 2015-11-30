@@ -6,10 +6,11 @@ namespace ItemFramework
 {
 	public class ShapedCraftingRecipe : CraftingRecipe
 	{
-		public bool CheckRecipe(ItemStack[] input)
+		public override bool CheckRecipe(Container input)
 		{
-			return !Ingredients.Where((t, i) => t.Item.GetType() != input[i].GetType() ||
-			t.Amount > input[i].Amount).Any(); 
+			var inputStacks = input.ItemStacks;
+			return !Ingredients.Where((t, i) => t.Item.GetType() != inputStacks[i].GetType() ||
+			t.Amount > inputStacks[i].Amount).Any(); 
 		}
 	}
 }
