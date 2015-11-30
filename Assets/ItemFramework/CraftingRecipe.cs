@@ -31,7 +31,7 @@
 			}
 		}
 
-		public bool CheckRecipe(ItemStack[] input)
+		public virtual bool CheckRecipe(ItemStack[] input)
 		{
 			return false; //FIXME write this
 		}

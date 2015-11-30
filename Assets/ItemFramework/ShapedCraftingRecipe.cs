@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 
 namespace ItemFramework
 {
-	public class ShapedCraftingRecipe : MonoBehaviour
+	public class ShapedCraftingRecipe : CraftingRecipe
 	{
-		public int width;
-
 		public bool CheckRecipe(ItemStack[] input)
 		{
-			return false;
+			return !Ingredients.Where((t, i) => t.Item.GetType() != input[i].GetType() ||
+			t.Amount > input[i].Amount).Any(); 
 		}
 	}
 }
