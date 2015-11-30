@@ -4,38 +4,38 @@ using System.Linq;
 
 namespace ItemFramework
 {
-    public class Crafter : MonoBehaviour
-    {
-        public Container input;
-        public Container output;
+	public class Crafter : MonoBehaviour
+	{
+		public Container input;
+		public Container output;
 
 
-        public ItemStack[] CraftRecipe(Container incommingContainer, bool simulate = false)
-        {
-            //var incommingIngredients = incommingContainer.GetAll();
-            var recipes = CraftingManager.Instance.Recipes;
+		public ItemStack[] CraftRecipe(Container incommingContainer, bool simulate = false)
+		{
+			//var incommingIngredients = incommingContainer.GetAll();
+			var recipes = CraftingManager.Instance.Recipes;
 
-            var selectedRecipes = new List<CraftingRecipe>();
-            foreach (var recipe in recipes)
-            {
-                var recipeIngredientsList = recipe.Ingredients.ToList();
-                var viable = true;
-                foreach (var recipeIngredient in recipeIngredientsList)
-                {
-                    var recipeIngredientType = recipeIngredient.Item.GetType();
-                    if (incommingContainer.Contains(recipeIngredientType) < recipeIngredient.Amount)
-                    {
-                        viable = false;
-                    }
-                }
-                if (viable)
-                    selectedRecipes.Add(recipe);
-            }
+			var selectedRecipes = new List<CraftingRecipe>();
+			foreach (var recipe in recipes)
+			{
+				var recipeIngredientsList = recipe.Ingredients.ToList();
+				var viable = true;
+				foreach (var recipeIngredient in recipeIngredientsList)
+				{
+					var recipeIngredientType = recipeIngredient.Item.GetType();
+					if (incommingContainer.Contains(recipeIngredientType) < recipeIngredient.Amount)
+					{
+						viable = false;
+					}
+				}
+				if (viable)
+					selectedRecipes.Add(recipe);
+			}
 
-            if (selectedRecipes.Count == 0)
-                return null;
+			if (selectedRecipes.Count == 0)
+				return null;
 
-            /*for (int i = 0; i < selectedRecipes.Count; i++)
+			/*for (int i = 0; i < selectedRecipes.Count; i++)
             {
                 var selectedRecipe = selectedRecipes[i];
                 bool viable2 = true;
@@ -51,21 +51,21 @@ namespace ItemFramework
                 }
             }*/
 
-            var firstRecipe = selectedRecipes.FirstOrDefault();
-            if (firstRecipe == null) return null;
+			var firstRecipe = selectedRecipes.FirstOrDefault();
+			if (firstRecipe == null) return null;
 
-            ItemStack[] ingredients = new ItemStack[firstRecipe.Ingredients.Length];
-            for (int i = 0, j = ingredients.Length; i < j; i++)
-            {
-                ingredients[i] = firstRecipe.Ingredients[i].Clone();
-            }
+			ItemStack[] ingredients = new ItemStack[firstRecipe.Ingredients.Length];
+			for (int i = 0, j = ingredients.Length; i < j; i++)
+			{
+				ingredients[i] = firstRecipe.Ingredients[i].Clone();
+			}
 
-            if (!simulate)
-            {
-                incommingContainer.Remove(ingredients);
-            }
+			if (!simulate)
+			{
+				incommingContainer.Remove(ingredients);
+			}
 
-            return firstRecipe.Output;
-        }
-    }
+			return firstRecipe.Output;
+		}
+	}
 }

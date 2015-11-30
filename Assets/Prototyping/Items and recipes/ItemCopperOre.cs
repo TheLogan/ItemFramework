@@ -3,10 +3,10 @@
 public class ItemCopperOre : Item
 {
 
-    public ItemCopperOre()
-    {
-        Name = "Copper ore";
-        StackSize = 32;
-    }
+	public ItemCopperOre()
+	{
+		Name = "Copper ore";
+		StackSize = 32;
+	}
 
 }
