@@ -1,7 +1,7 @@
 ﻿using System;
 using ItemFramework;
 
-public class RecipeBronzeIngot : CraftingRecipe
+public class RecipeBronzeIngot : FurnaceRecipe
 {
 	public RecipeBronzeIngot() : base()
 	{
@@ -14,5 +14,6 @@ public class RecipeBronzeIngot : CraftingRecipe
 		{
 			new ItemStack(new ItemBronzeIngot())
 		};
+		ProgressTime = 15;
 	}
 }

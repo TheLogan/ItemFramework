@@ -27,17 +27,5 @@ namespace ItemFrameworkTest
 			itemStack.Amount = Common.ItemStackSize * 2;
 			Assert.AreEqual(item.StackSize, itemStack.Amount);
 		}
-
-		[TestMethod]
-		public void ItemStackAdditionTest()
-		{
-			// TODO: Write this
-		}
-
-		[TestMethod]
-		public void ItemStackSubtractionTest()
-		{
-			// TODO: Write this
-		}
 	}
 }

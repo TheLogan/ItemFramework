@@ -1,6 +1,4 @@
-﻿using ItemFramework;
-
-public class ItemTinOre : Item
+﻿public class ItemTinOre : ItemOre
 {
 
 	public ItemTinOre()

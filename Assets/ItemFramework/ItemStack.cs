@@ -4,6 +4,8 @@ using Guid = System.Guid;
 
 namespace ItemFramework
 {
+	public delegate void ItemStackEmptyEvent(Guid itemStackId);
+
 	public class ItemStack
 	{
 		private static Dictionary<Guid, ItemStack> dict = new Dictionary<Guid, ItemStack>();
@@ -91,6 +93,8 @@ namespace ItemFramework
 		private Item item;
 		private int amount;
 
+		public static event ItemStackEmptyEvent Empty;
+
 		public Item Item
 		{
 			get
@@ -112,6 +116,13 @@ namespace ItemFramework
 				{
 					Amount = value.StackSize;
 				}
+				if (value == null)
+				{
+					if (Empty != null)
+					{
+						Empty.Invoke(Id);
+                    }
+                }
 				item = value;
 			}
 		}
@@ -136,7 +147,10 @@ namespace ItemFramework
 				}
 				if (value == 0)
 				{
-					item = null;
+					if (Empty != null)
+					{
+						Empty.Invoke(Id);
+					}
 				}
 				amount = value;
 			}

@@ -1,6 +1,4 @@
-﻿using ItemFramework;
-
-public class ItemCopperOre : Item
+﻿public class ItemCopperOre : ItemOre
 {
 
 	public ItemCopperOre()

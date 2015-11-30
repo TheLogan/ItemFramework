@@ -4,12 +4,17 @@ using System.Linq;
 using Guid = System.Guid;
 using String = System.String;
 using Type = System.Type;
+using Serializable = System.SerializableAttribute;
+using System.ComponentModel;
 
 namespace ItemFramework
 {
 	public delegate void ContainerChangedEvent();
 
-	public class Container : MonoBehaviour
+	public delegate void ContainerValidatorEvent(ItemStack itemStack, CancelEventArgs args);
+
+	[Serializable]
+	public class Container
 	{
 		private static Dictionary<Guid, Container> dict = new Dictionary<Guid, Container>();
 
@@ -57,10 +62,39 @@ namespace ItemFramework
 			}
 		}
 
+		public ItemStack[] ItemStacks
+		{
+			get
+			{
+				List<ItemStack> itemStacks = new List<ItemStack>();
+				foreach (var item in Items)
+				{
+					itemStacks.Add(item.HasValue ? ItemStack.GetItemStackById(item.Value) : null);
+				}
+				return itemStacks.ToArray();
+			}
+		}
+
+		public event ContainerValidatorEvent Validator;
 		public event ContainerChangedEvent Changed;
 
-		public int Slots = 20;
+		public int Slots { get; private set; }
 		public int Width { get; set; }
+
+		public Container(int slots = 20)
+		{
+			Slots = slots;
+
+			ItemStack.Empty += ItemStack_Empty;
+		}
+
+		private void ItemStack_Empty(Guid itemStackId)
+		{
+			if (Items.Contains(itemStackId))
+			{
+				items[System.Array.IndexOf(items, itemStackId)] = null;
+			}
+		}
 
 		/// <summary>
 		/// Will attempt to add itemstack to the index, if the index is empty it will succeed,
@@ -105,6 +139,17 @@ namespace ItemFramework
 			for (int i = 0, j = stacks.Length; i < j; i++)
 			{
 				ItemStack stack = clonedStacks[i];
+
+				// Validate the ItemStack
+				if (Validator != null)
+				{
+					var eventArgs = new CancelEventArgs();
+					Validator(stack, eventArgs);
+					if (eventArgs.Cancel)
+					{
+						return false;
+					}
+				}
 
 				// First add to already existing stacks
 				for (int k = 0, l = Items.Length; k < l; k++)
@@ -177,6 +222,17 @@ namespace ItemFramework
 			bool containerChanged = false;
 			foreach (ItemStack stack in clonedStacks)
 			{
+				// Validate the ItemStack
+				if (Validator != null)
+				{
+					var eventArgs = new CancelEventArgs();
+					Validator(stack, eventArgs);
+					if (eventArgs.Cancel)
+					{
+						continue;
+					}
+				}
+
 				// First add to already existing stacks
 				for (int i = 0; i < Items.Length; i++)
 				{

@@ -15,5 +15,14 @@ namespace ItemFrameworkTest
 				StackSize = ItemStackSize
 			};
 		}
+
+		public static ItemStack GetItemStack(int amount)
+		{
+			return new ItemStack()
+			{
+				Item = GetItem(),
+				Amount = amount
+			};
+		}
 	}
 }
