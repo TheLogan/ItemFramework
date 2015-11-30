@@ -62,6 +62,7 @@ namespace ItemFramework
 		}
 
 		private bool isLocked;
+		private bool isLimited = true;
 		private Guid id;
 
 		public Guid Id
@@ -103,6 +104,14 @@ namespace ItemFramework
 				{
 					throw new System.InvalidOperationException("Can't modify locked ItemStack");
 				}
+				if (amount == 0)
+				{
+					Amount = 1;
+				}
+				else if (isLimited && amount > value.StackSize)
+				{
+					Amount = value.StackSize;
+				}
 				item = value;
 			}
 		}
@@ -120,7 +129,37 @@ namespace ItemFramework
 				{
 					throw new System.InvalidOperationException("Can't modify locked ItemStack");
 				}
+				if (isLimited && item != null && item.StackSize < value)
+				{
+					amount = item.StackSize;
+					return;
+				}
+				if (value == 0)
+				{
+					item = null;
+				}
 				amount = value;
+			}
+		}
+
+		public bool IsLimited
+		{
+			get
+			{
+				return isLimited;
+			}
+
+			set
+			{
+				if (value)
+				{
+					if (item != null && item.StackSize < Amount)
+					{
+						// Ignore isLocked
+						amount = item.StackSize;
+					}
+				}
+				isLimited = value;
 			}
 		}
 
