@@ -973,9 +973,6 @@ namespace Newtonsoft.Json.Serialization {
             Type t = ReflectionUtils.EnsureNotNullableType(objectType);
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(t);
 
-            if (containerAttribute is DbObjectAttribute)
-                return CreateObjectContract(objectType);
-
             if (containerAttribute is JsonObjectAttribute)
                 return CreateObjectContract(objectType);
 
