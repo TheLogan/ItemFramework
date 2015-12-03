@@ -67,7 +67,7 @@ public class Furnace : Crafter
 
 	private void OnInputChanged()
 	{
-		Debug.Log("Input changed => " + input.ToString());
+		//Debug.Log("Input changed => " + input.ToString());
 		TryCraft();
 	}
 

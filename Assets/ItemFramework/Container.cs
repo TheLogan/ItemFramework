@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using ItemFramework.Db;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using UnityEngine;
 using Guid = System.Guid;
+using Serializable = System.SerializableAttribute;
 using String = System.String;
 using Type = System.Type;
-using Serializable = System.SerializableAttribute;
-using System.ComponentModel;
 
 namespace ItemFramework
 {
@@ -14,35 +15,25 @@ namespace ItemFramework
 	public delegate void ContainerValidatorEvent(ItemStack itemStack, CancelEventArgs args);
 
 	[Serializable]
-	public class Container
+	[DbObject("containers")]
+	public class Container : DbObject
 	{
 		private static Dictionary<Guid, Container> dict = new Dictionary<Guid, Container>();
-
-		public static Container GetContainerById(Guid id)
-		{
-			if (id == Guid.Empty)
-			{
-				Debug.LogWarning("Trying to get Container with empty Guid");
-			}
-			return dict[id];
-		}
-
-		private Guid id;
-		private Guid?[] items;
-
-		public Guid Id
+		public override Guid Id
 		{
 			get
 			{
 				return id;
 			}
-			set
+
+			internal set
 			{
 				if (value != Guid.Empty)
 				{
 					if (id != Guid.Empty)
 					{
 						dict.Remove(id);
+						DbManager.Instance.Handler.Delete(this);
 					}
 					dict.Add(value, this);
 					id = value;
@@ -50,6 +41,9 @@ namespace ItemFramework
 			}
 		}
 
+		[DbProperty("items")]
+		private Guid?[] items;
+		
 		public Guid?[] Items
 		{
 			get
@@ -69,7 +63,7 @@ namespace ItemFramework
 				List<ItemStack> itemStacks = new List<ItemStack>();
 				foreach (var item in Items)
 				{
-					itemStacks.Add(item.HasValue ? ItemStack.GetItemStackById(item.Value) : null);
+					itemStacks.Add(item.HasValue ? ItemStack.GetById(item.Value) : null);
 				}
 				return itemStacks.ToArray();
 			}
@@ -78,7 +72,9 @@ namespace ItemFramework
 		public event ContainerValidatorEvent Validator;
 		public event ContainerChangedEvent Changed;
 
+		[DbProperty("slots")]
 		public int Slots { get; private set; }
+		[DbProperty("width")]
 		public int Width { get; set; }
 
 		public Container(int slots = 20)
@@ -86,6 +82,8 @@ namespace ItemFramework
 			Slots = slots;
 
 			ItemStack.Empty += ItemStack_Empty;
+
+			SaveToDb();
 		}
 
 		private void ItemStack_Empty(Guid itemStackId)
@@ -135,7 +133,7 @@ namespace ItemFramework
 
 		public bool CanAdd(params ItemStack[] stacks)
 		{
-			ItemStack[] clonedStacks = ItemStack.CloneMultiple(stacks);
+			ItemStack[] clonedStacks = ItemStack.CloneMultiple(true, stacks);
 			for (int i = 0, j = stacks.Length; i < j; i++)
 			{
 				ItemStack stack = clonedStacks[i];
@@ -218,7 +216,7 @@ namespace ItemFramework
 		/// <returns></returns>
 		public ItemStack[] Add(params ItemStack[] stacks)
 		{
-			List<ItemStack> clonedStacks = new List<ItemStack>(ItemStack.CloneMultiple(stacks));
+			List<ItemStack> clonedStacks = new List<ItemStack>(ItemStack.CloneMultiple(true, stacks));
 			bool containerChanged = false;
 			foreach (ItemStack stack in clonedStacks)
 			{
@@ -289,6 +287,7 @@ namespace ItemFramework
 				if (Changed != null)
 				{
 					Changed.Invoke();
+					SaveToDb();
 				}
 			}
 			return clonedStacks.ToArray();
@@ -323,6 +322,7 @@ namespace ItemFramework
 			if (Changed != null)
 			{
 				Changed.Invoke();
+				SaveToDb();
 			}
 			return tempStack;
 		}
@@ -347,6 +347,7 @@ namespace ItemFramework
 				if (Changed != null)
 				{
 					Changed.Invoke();
+					SaveToDb();
 				}
 				return tempStack;
 			}
@@ -362,6 +363,7 @@ namespace ItemFramework
 			if (Changed != null)
 			{
 				Changed.Invoke();
+				SaveToDb();
 			}
 			return tempStack;
 		}
@@ -408,6 +410,7 @@ namespace ItemFramework
 			if (containerChanged && Changed != null)
 			{
 				Changed.Invoke();
+				SaveToDb();
 			}
 
 			return removedItemStacks.ToArray();
@@ -416,22 +419,23 @@ namespace ItemFramework
 
 		public bool Contains(ItemStack stack)
 		{
-			return Items.Any(x => x.HasValue && ItemStack.GetItemStackById(x.Value).Item.Name == stack.Item.Name);
+			return Items.Any(x => x.HasValue && ItemStack.GetById(x.Value).Item.Name == stack.Item.Name);
 		}
 
 
 		public int Contains(Type t)
 		{
-			return Items.Where(x => x.HasValue && ItemStack.GetItemStackById(x.Value).Item.GetType() == t).Sum(x => ItemStack.GetItemStackById(x.Value).Amount);
-			//            return tempStackId.HasValue ? ItemStack.GetItemStackById(tempStackId.Value).Amount : 0;
+			return Items.Where(x => x.HasValue && ItemStack.GetById(x.Value).Item.GetType() == t).Sum(x => ItemStack.GetById(x.Value).Amount);
+			//            return tempStackId.HasValue ? ItemStack.GetById(tempStackId.Value).Amount : 0;
 		}
 
 		public ItemStack Get(int index)
 		{
+			if (index < 0 || index >= Items.Length) return null;
 			ItemStack itemStack = null;
 			if (Items[index].HasValue)
 			{
-				itemStack = ItemStack.GetItemStackById(Items[index].Value);
+				itemStack = ItemStack.GetById(Items[index].Value);
 			}
 			return itemStack;
 		}
@@ -443,7 +447,7 @@ namespace ItemFramework
 			{
 				if (item.HasValue)
 				{
-					itemStacks.Add(ItemStack.GetItemStackById(item.Value));
+					itemStacks.Add(ItemStack.GetById(item.Value));
 				}
 			}
 			return itemStacks.ToArray();
@@ -457,7 +461,7 @@ namespace ItemFramework
 			{
 				itemStackStrings[i] = itemStacks[i].ToString();
 			}
-			return "Container[" + String.Join(",", itemStackStrings) + "]";
+			return "Container[Id=" + Id + ",Items=" + String.Join(",", itemStackStrings) + "]";
 		}
 	}
 }

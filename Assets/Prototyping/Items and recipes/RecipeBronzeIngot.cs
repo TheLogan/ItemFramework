@@ -7,12 +7,12 @@ public class RecipeBronzeIngot : FurnaceRecipe
 	{
 		Ingredients = new ItemStack[2]
 		{
-			new ItemStack(new ItemCopperOre(), 3),
-			new ItemStack(new ItemTinOre())
+			new ItemStack(new ItemCopperOre(), 3, true, true),
+			new ItemStack(new ItemTinOre(), true, true)
 		};
 		Output = new ItemStack[1]
 		{
-			new ItemStack(new ItemBronzeIngot())
+			new ItemStack(new ItemBronzeIngot(), true, true)
 		};
 		ProgressTime = 15;
 	}

@@ -1,4 +1,5 @@
 ﻿using ItemFramework;
+using ItemFramework.Db;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,11 @@ public class GuiHandler : MonoBehaviour
 	public Text ProgressText;
 	public Furnace FurnaceScript;
 
+	void Awake()
+	{
+		DbManager.Instance.Handler = new DbFileHandler("test.json");
+	}
+
 	public void AddItems()
 	{
 		FurnaceScript.input.Add(new ItemStack(new ItemCopperOre(), 64));
@@ -20,7 +26,7 @@ public class GuiHandler : MonoBehaviour
 
 	public void AddFuel()
 	{
-		FurnaceScript.fuel.Add(new ItemStack(new ItemCoal()));
+		FurnaceScript.fuel.Add(new ItemStack(new ItemCoal(), true, true));
 	}
 
 	void Update()

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ItemFramework.Db;
+using System.Collections.Generic;
 using UnityEngine;
 using Guid = System.Guid;
 
@@ -6,11 +7,33 @@ namespace ItemFramework
 {
 	public delegate void ItemStackEmptyEvent(Guid itemStackId);
 
-	public class ItemStack
+	[DbObject("itemstack")]
+	public class ItemStack : DbObject
 	{
 		private static Dictionary<Guid, ItemStack> dict = new Dictionary<Guid, ItemStack>();
+		public override Guid Id
+		{
+			get
+			{
+				return id;
+			}
 
-		public static ItemStack GetItemStackById(Guid id)
+			internal set
+			{
+				if (value != Guid.Empty)
+				{
+					if (id != Guid.Empty)
+					{
+						dict.Remove(id);
+						DbManager.Instance.Handler.Delete(this);
+					}
+					dict.Add(value, this);
+					id = value;
+				}
+			}
+		}
+
+		public static ItemStack GetById(Guid id)
 		{
 			if (id == Guid.Empty)
 			{
@@ -24,12 +47,12 @@ namespace ItemFramework
 		/// </summary>
 		/// <param name="stacks">ItemStacks</param>
 		/// <returns>Cloned ItemStacks</returns>
-		public static ItemStack[] CloneMultiple(params ItemStack[] stacks)
+		public static ItemStack[] CloneMultiple(bool temp = false, params ItemStack[] stacks)
 		{
 			ItemStack[] clonedStacks = new ItemStack[stacks.Length];
 			for (int i = 0, j = stacks.Length; i < j; i++)
 			{
-				clonedStacks[i] = stacks[i].Clone();
+				clonedStacks[i] = stacks[i].Clone(temp);
 			}
 			return clonedStacks;
 		}
@@ -63,34 +86,14 @@ namespace ItemFramework
 			}
 		}
 
+		[DbProperty("locked")]
 		private bool isLocked;
+		[DbProperty("limited")]
 		private bool isLimited = true;
-		private Guid id;
 
-		public Guid Id
-		{
-			get
-			{
-				return id;
-			}
-			set
-			{
-				if (isLocked)
-				{
-					throw new System.InvalidOperationException("Can't modify locked ItemStack");
-				}
-				if (value != Guid.Empty)
-				{
-					if (id != Guid.Empty)
-					{
-						dict.Remove(id);
-					}
-					dict.Add(value, this);
-					id = value;
-				}
-			}
-		}
+		[DbProperty("item")]
 		private Item item;
+		[DbProperty("amount")]
 		private int amount;
 
 		public static event ItemStackEmptyEvent Empty;
@@ -121,8 +124,8 @@ namespace ItemFramework
 					if (Empty != null)
 					{
 						Empty.Invoke(Id);
-                    }
-                }
+					}
+				}
 				item = value;
 			}
 		}
@@ -177,17 +180,21 @@ namespace ItemFramework
 			}
 		}
 
-		public ItemStack()
+		public ItemStack(bool temp = false)
 		{
-			Id = Guid.NewGuid();
+			if (!temp)
+			{
+				SaveToDb();
+			}
 		}
 
-		public ItemStack(Item item, int amount = 1, bool locked = false)
+		public ItemStack(Item item, bool isLocked, bool temp) : this(item, 1, isLocked, temp) { }
+
+		public ItemStack(Item item, int amount = 1, bool isLocked = false, bool temp = false) : this(temp)
 		{
 			Amount = amount;
 			Item = item;
-			Id = Guid.NewGuid();
-			this.isLocked = locked;
+			this.isLocked = isLocked;
 		}
 
 		public void SetLocked()
@@ -200,21 +207,23 @@ namespace ItemFramework
 			return isLocked;
 		}
 
-		public ItemStack Clone()
+		public ItemStack Clone(bool temp = false)
 		{
-			return new ItemStack(Item, Amount);
+			return new ItemStack(Item, Amount, false, temp);
 		}
 
 		public override bool Equals(object obj)
 		{
+			if (obj == null) return false;
 			if (!(obj is ItemStack)) return false;
 			var other = (ItemStack)obj;
-			return Item.GetType() == other.Item.GetType() && Amount == other.Amount;
+			if ((Item == null && other.Item != null) || (Item != null && other.Item == null)) return false;
+			return ((Item == null && other.Item == null) || (Item.GetType() == other.Item.GetType())) && Amount == other.Amount;
 		}
 
 		public override string ToString()
 		{
-			return "ItemStack[" + Item.ToString() + ",Amount=" + Amount + "]";
+			return "ItemStack[Id=" + Id + ",Item=" + Item.ToString() + ",Amount=" + Amount + "]";
 		}
 
 		public override int GetHashCode()
