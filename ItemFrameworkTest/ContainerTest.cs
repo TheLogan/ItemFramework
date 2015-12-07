@@ -1,4 +1,5 @@
 ﻿using ItemFramework;
+using ItemFramework.Db;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ItemFrameworkTest
@@ -6,6 +7,12 @@ namespace ItemFrameworkTest
 	[TestClass]
 	public class ContainerTest
 	{
+		[TestInitialize]
+		public void Init()
+		{
+			DbManager.Instance.Handler = new DbFileHandler("unittest.json");
+		}
+
 		[TestMethod]
 		public void ItemContainerAdditionTest()
 		{

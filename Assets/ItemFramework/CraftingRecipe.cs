@@ -40,14 +40,11 @@ namespace ItemFramework
 			var recipeIngredientsList = RecipeIngredients.ToList();
 			foreach (var recipeIngredient in recipeIngredientsList)
 			{
-				var inputIngredient = inputStacks.FirstOrDefault(x => x.GetType() == recipeIngredient.GetType());
-				if (inputIngredient == null || inputIngredient.Amount < recipeIngredient.Amount)
+				var recipeIngredientType = recipeIngredient.Item.GetType();
+				if (input.Contains(recipeIngredientType) < recipeIngredient.Amount)
+				{
 					return false;
-//				var recipeIngredientType = recipeIngredient.Item.GetType();
-//				if (inputContainer.Contains(recipeIngredientType) < recipeIngredient.Amount)
-//				{
-//					return false;
-//				}
+				}
 			}
 			return true;
 		}

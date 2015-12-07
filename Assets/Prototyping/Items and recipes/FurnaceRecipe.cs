@@ -2,8 +2,8 @@
 
 public abstract class FurnaceRecipe : CraftingRecipe
 {
-	private int progressTime;
-	public int ProgressTime
+	private float progressTime;
+	public float ProgressTime
 	{
 		get { return progressTime; }
 		protected set { progressTime = value; }

@@ -24,13 +24,17 @@ public class Furnace : Crafter
 	private void OnInputValidate(ItemStack itemStack, CancelEventArgs args)
 	{
 		if (!(itemStack.Item is ItemOre))
+		{
 			args.Cancel = true;
+		}
 	}
 
 	private void OnFuelValidate(ItemStack itemStack, CancelEventArgs args)
 	{
 		if (!(itemStack.Item is IBurnable))
+		{
 			args.Cancel = true;
+		}
 	}
 
 	public FurnaceRecipe CurrentRecipe { get; private set; }
@@ -46,12 +50,12 @@ public class Furnace : Crafter
 
 	private void TryCraft()
 	{
-		ItemStack fuelStack = fuel.Get(0);
-		if (fuelStack != null && fuelStack.Amount > 0)
+		if (input.GetAll().Length > 0)
 		{
-			if (input.GetAll().Length > 0)
+			if (BurnTime == 0)
 			{
-				if (BurnTime == 0)
+				ItemStack fuelStack = fuel.Get(0);
+				if (fuelStack != null && fuelStack.Amount > 0)
 				{
 					FurnaceRecipe recipe = (FurnaceRecipe)GetFirstRecipe(input);
 					if (recipe != null && output.CanAdd(recipe.Output))
@@ -60,6 +64,14 @@ public class Furnace : Crafter
 						StartCoroutine("Burn", ((IBurnable)fuelStack.Item).BurnTime);
 						fuelStack.Amount--;
 					}
+				}
+			}
+			else if (CurrentRecipe == null)
+			{
+				FurnaceRecipe recipe = (FurnaceRecipe)GetFirstRecipe(input);
+				if (recipe != null && output.CanAdd(recipe.Output))
+				{
+					CurrentRecipe = recipe;
 				}
 			}
 		}
@@ -107,7 +119,7 @@ public class Furnace : Crafter
 						this.Progress = 0;
 					}
 				}
-				this.Progress = this.ProgressTimeElapsed / this.CurrentRecipe.ProgressTime;
+				this.Progress = this.ProgressTimeElapsed / Mathf.Max(this.CurrentRecipe != null ? this.CurrentRecipe.ProgressTime : 1, 1);
 			}
 			this.BurnTime -= TICK_TIME;
 			this.BurnProgress = this.BurnTime / burntime;

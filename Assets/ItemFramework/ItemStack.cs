@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Guid = System.Guid;
+using System;
+using System.ComponentModel;
 
 namespace ItemFramework
 {
@@ -65,7 +67,7 @@ namespace ItemFramework
 		{
 			for (int i = 0, j = stacks.Length; i < j; i++)
 			{
-				if (!stacks[i].IsLocked())
+				if (!stacks[i].IsLocked)
 				{
 					stacks[i].Amount = 0;
 					stacks[i].Item = null;
@@ -87,9 +89,12 @@ namespace ItemFramework
 		}
 
 		[DbProperty("locked")]
+		[DefaultValue(false)]
 		private bool isLocked;
 		[DbProperty("limited")]
+		[DefaultValue(true)]
 		private bool isLimited = true;
+		private bool isTemp;
 
 		[DbProperty("item")]
 		private Item item;
@@ -111,22 +116,38 @@ namespace ItemFramework
 				{
 					throw new System.InvalidOperationException("Can't modify locked ItemStack");
 				}
-				if (amount == 0)
+				if (value != null)
 				{
-					Amount = 1;
+					if (amount == 0)
+					{
+						Amount = 1;
+					}
+					else if (isLimited && amount > value.StackSize)
+					{
+						Amount = value.StackSize;
+					}
 				}
-				else if (isLimited && amount > value.StackSize)
+				else
 				{
-					Amount = value.StackSize;
-				}
-				if (value == null)
-				{
+					amount = 0;
+
 					if (Empty != null)
 					{
 						Empty.Invoke(Id);
 					}
+
+					DbManager.Instance.Handler.Delete(this);
+
+					if (Id != Guid.Empty)
+					{
+						dict.Remove(Id);
+					}
 				}
 				item = value;
+				if (!IsTemp)
+				{
+					DbManager.Instance.Handler.Save();
+				}
 			}
 		}
 
@@ -145,17 +166,29 @@ namespace ItemFramework
 				}
 				if (isLimited && item != null && item.StackSize < value)
 				{
-					amount = item.StackSize;
-					return;
+					value = item.StackSize;
 				}
 				if (value == 0)
 				{
+					item = null;
+
 					if (Empty != null)
 					{
 						Empty.Invoke(Id);
 					}
+
+					DbManager.Instance.Handler.Delete(this);
+
+					if (Id != Guid.Empty)
+					{
+						dict.Remove(Id);
+					}
 				}
 				amount = value;
+				if (!IsTemp)
+				{
+					DbManager.Instance.Handler.Save();
+				}
 			}
 		}
 
@@ -177,6 +210,26 @@ namespace ItemFramework
 					}
 				}
 				isLimited = value;
+				if (!IsTemp)
+				{
+					DbManager.Instance.Handler.Save();
+				}
+			}
+		}
+
+		public bool IsLocked
+		{
+			get
+			{
+				return isLocked;
+			}
+		}
+
+		public bool IsTemp
+		{
+			get
+			{
+				return isTemp;
 			}
 		}
 
@@ -186,9 +239,8 @@ namespace ItemFramework
 			{
 				SaveToDb();
 			}
+			isTemp = temp;
 		}
-
-		public ItemStack(Item item, bool isLocked, bool temp) : this(item, 1, isLocked, temp) { }
 
 		public ItemStack(Item item, int amount = 1, bool isLocked = false, bool temp = false) : this(temp)
 		{
@@ -197,19 +249,36 @@ namespace ItemFramework
 			this.isLocked = isLocked;
 		}
 
+		public ItemStack(Item item, bool isLocked, bool temp) : this(item, 1, isLocked, temp) { }
+
 		public void SetLocked()
 		{
 			isLocked = true;
-		}
-
-		public bool IsLocked()
-		{
-			return isLocked;
+			if (!IsTemp)
+			{
+				DbManager.Instance.Handler.Save();
+			}
 		}
 
 		public ItemStack Clone(bool temp = false)
 		{
-			return new ItemStack(Item, Amount, false, temp);
+			ItemStack clone = new ItemStack(Item, Amount, false, temp);
+			// Apply amount again if not limited, as ItemStacks are defaulted to limited
+			if (!isLimited)
+			{
+				clone.IsLimited = false;
+				clone.Amount = amount;
+			}
+			return clone;
+		}
+
+		public ItemStack GetPersistant()
+		{
+			if (IsTemp)
+			{
+				return Clone();
+			}
+			return this;
 		}
 
 		public override bool Equals(object obj)

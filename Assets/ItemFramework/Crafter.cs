@@ -31,7 +31,7 @@ namespace ItemFramework
 
 				for (int i = 0, j = ingredients.Length; i < j; i++)
 				{
-					ingredients[i] = firstRecipe.RecipeIngredients[i].Clone();
+					ingredients[i] = firstRecipe.RecipeIngredients[i].Clone(true);
 				}
 
 				incommingContainer.Remove(ingredients);

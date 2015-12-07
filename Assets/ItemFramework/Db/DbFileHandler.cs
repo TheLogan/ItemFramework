@@ -119,7 +119,12 @@ namespace ItemFramework.Db
 					numBytesToRead -= n;
 				}
 				numBytesToRead = bytes.Length;
-				DataContainer loadedData = JsonConvert.DeserializeObject<DataContainer>(Encoding.UTF8.GetString(bytes));
+				DataContainer loadedData = JsonConvert.DeserializeObject<DataContainer>(
+					Encoding.UTF8.GetString(bytes),
+					new JsonSerializerSettings
+					{
+						DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
+					});
 				if (loadedData == null)
 				{
 					Debug.Log("No database found");
@@ -134,7 +139,13 @@ namespace ItemFramework.Db
 		{
 			using (FileStream fs = new FileStream(Path, FileMode.Create))
 			{
-				string t = JsonConvert.SerializeObject(dataContainer);
+				string t = JsonConvert.SerializeObject(
+					dataContainer,
+					Formatting.Indented,
+					new JsonSerializerSettings
+					{
+						DefaultValueHandling = DefaultValueHandling.Ignore
+					});
 				fs.Write(Encoding.UTF8.GetBytes(t), 0, Encoding.UTF8.GetByteCount(t));
 			}
 		}
@@ -152,8 +163,6 @@ namespace ItemFramework.Db
 			{
 				throw new InvalidOperationException("Object is missing DbObject attribute");
 			}
-
-			obj.Id = Guid.NewGuid();
 
 			if (obj is ItemStack)
 			{

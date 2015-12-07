@@ -1,11 +1,18 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ItemFramework;
+using ItemFramework.Db;
 
 namespace ItemFrameworkTest
 {
 	[TestClass]
 	public class ItemStackTest
 	{
+		[TestInitialize]
+		public void Init()
+		{
+			DbManager.Instance.Handler = new DbFileHandler("unittest.json");
+		}
+
 		[TestMethod]
 		public void ItemStackTypeTest()
 		{
@@ -26,6 +33,17 @@ namespace ItemFrameworkTest
 			itemStack.Item = item;
 			itemStack.Amount = Common.ItemStackSize * 2;
 			Assert.AreEqual(item.StackSize, itemStack.Amount);
+		}
+
+		[TestMethod]
+		public void ItemStackLimitlessSizeTest()
+		{
+			Item item = Common.GetItem();
+			ItemStack itemStack = new ItemStack();
+			itemStack.Item = item;
+			itemStack.IsLimited = false;
+			itemStack.Amount = Common.ItemStackSize * 2;
+			Assert.AreEqual(item.StackSize * 2, itemStack.Amount);
 		}
 	}
 }

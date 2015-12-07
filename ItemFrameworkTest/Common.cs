@@ -18,11 +18,7 @@ namespace ItemFrameworkTest
 
 		public static ItemStack GetItemStack(int amount)
 		{
-			return new ItemStack()
-			{
-				Item = GetItem(),
-				Amount = amount
-			};
+			return new ItemStack(GetItem(), amount, false, true);
 		}
 	}
 }

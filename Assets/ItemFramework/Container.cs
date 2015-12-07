@@ -109,7 +109,7 @@ namespace ItemFramework
 			//If the index is null just add the new items
 			if (Items[index].HasValue)
 			{
-				Items[index] = type.Id;
+				Items[index] = type.GetPersistant().Id;
 			}
 			else //If it's not null find a different index to place it at
 			{
@@ -125,7 +125,7 @@ namespace ItemFramework
 					return type;
 
 				var closest = indexes.Aggregate((x, y) => Mathf.Abs(x - index) < Mathf.Abs(y - index) ? x : y); //Find the closest empty index
-				Items[closest] = type.Id;
+				Items[closest] = type.GetPersistant().Id;
 				return null;
 			}
 			return null;
@@ -220,6 +220,8 @@ namespace ItemFramework
 			bool containerChanged = false;
 			foreach (ItemStack stack in clonedStacks)
 			{
+				if (stack == null || stack.Item == null) continue;
+
 				// Validate the ItemStack
 				if (Validator != null)
 				{
@@ -246,7 +248,7 @@ namespace ItemFramework
 								stack.Amount -= amountToAdd;
 								containerChanged = true;
 
-								if (stack.Amount == 0)
+								if (stack.Item == null || stack.Amount == 0)
 								{
 									break;
 								}
@@ -256,7 +258,7 @@ namespace ItemFramework
 				}
 
 				// If the amount have been put into the Container, continue to next ItemStack
-				if (stack.Amount == 0)
+				if (stack.Item == null || stack.Amount == 0)
 				{
 					continue;
 				}
@@ -273,7 +275,7 @@ namespace ItemFramework
 						}
 						else
 						{
-							Items[i] = stack.Clone().Id;
+							Items[i] = stack.GetPersistant().Id;
 							containerChanged = true;
 							stack.Amount = 0;
 							break;
