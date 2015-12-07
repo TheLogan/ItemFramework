@@ -35,6 +35,11 @@ namespace ItemFramework
 			}
 		}
 
+		/// <summary>
+		/// Get ItemStack by Id
+		/// </summary>
+		/// <param name="id">ItemStack Id</param>
+		/// <returns>ItemStack if found, otherwise null</returns>
 		public static ItemStack GetById(Guid id)
 		{
 			if (id == Guid.Empty)
