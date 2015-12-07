@@ -5,7 +5,7 @@ public class RecipeBronzeIngot : FurnaceRecipe
 {
 	public RecipeBronzeIngot() : base()
 	{
-		Ingredients = new ItemStack[2]
+		RecipeIngredients = new ItemStack[2]
 		{
 			new ItemStack(new ItemCopperOre(), 3, true, true),
 			new ItemStack(new ItemTinOre(), true, true)

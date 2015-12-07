@@ -5,19 +5,19 @@ namespace ItemFramework
 {
 	public abstract class CraftingRecipe
 	{
-		private ItemStack[] ingredients;
+		private ItemStack[] recipeIngredients;
 		private ItemStack[] output;
 
-		public ItemStack[] Ingredients
+		public ItemStack[] RecipeIngredients
 		{
 			get
 			{
-				return ingredients;
+				return recipeIngredients;
 			}
 			set
 			{
 				ItemStack.LockMultiple(value);
-				ingredients = value;
+				recipeIngredients = value;
 			}
 		}
 
@@ -37,7 +37,7 @@ namespace ItemFramework
 		public virtual bool CheckRecipe(Container input)
 		{
 			var inputStacks = input.GetAll();
-			var recipeIngredientsList = Ingredients.ToList();
+			var recipeIngredientsList = RecipeIngredients.ToList();
 			foreach (var recipeIngredient in recipeIngredientsList)
 			{
 				var inputIngredient = inputStacks.FirstOrDefault(x => x.GetType() == recipeIngredient.GetType());

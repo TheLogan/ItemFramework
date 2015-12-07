@@ -27,11 +27,11 @@ namespace ItemFramework
 
 			if (!simulate)
 			{
-				ItemStack[] ingredients = new ItemStack[firstRecipe.Ingredients.Length];
+				ItemStack[] ingredients = new ItemStack[firstRecipe.RecipeIngredients.Length];
 
 				for (int i = 0, j = ingredients.Length; i < j; i++)
 				{
-					ingredients[i] = firstRecipe.Ingredients[i].Clone();
+					ingredients[i] = firstRecipe.RecipeIngredients[i].Clone();
 				}
 
 				incommingContainer.Remove(ingredients);
@@ -47,7 +47,7 @@ namespace ItemFramework
 			var selectedRecipes = new List<CraftingRecipe>();
 			foreach (var recipe in recipes)
 			{
-				var recipeIngredientsList = recipe.Ingredients.ToList();
+				var recipeIngredientsList = recipe.RecipeIngredients.ToList();
 				var viable = true;
 				foreach (var recipeIngredient in recipeIngredientsList)
 				{
