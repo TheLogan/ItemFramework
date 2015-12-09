@@ -72,6 +72,7 @@ namespace ItemFramework
 		{
 			for (int i = 0, j = stacks.Length; i < j; i++)
 			{
+				if (stacks[i] == null) continue;
 				if (!stacks[i].IsLocked)
 				{
 					stacks[i].Amount = 0;
@@ -89,6 +90,7 @@ namespace ItemFramework
 		{
 			for (int i = 0, j = stacks.Length; i < j; i++)
 			{
+				if (stacks[i] == null) continue;
 				stacks[i].SetLocked();
 			}
 		}

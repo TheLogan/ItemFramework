@@ -107,7 +107,7 @@ namespace ItemFramework
 		{ //TODO take max stack sizes into account
 
 			//If the index is null just add the new items
-			if (Items[index].HasValue)
+			if (!Items[index].HasValue)
 			{
 				Items[index] = type.GetPersistant().Id;
 			}
@@ -442,7 +442,7 @@ namespace ItemFramework
 			return itemStack;
 		}
 
-		public ItemStack[] GetAll()
+		public ItemStack[] GetAllItemStacks()
 		{
 			List<ItemStack> itemStacks = new List<ItemStack>();
 			foreach (var item in Items)
@@ -457,7 +457,7 @@ namespace ItemFramework
 
 		public override string ToString()
 		{
-			ItemStack[] itemStacks = GetAll();
+			ItemStack[] itemStacks = GetAllItemStacks();
 			string[] itemStackStrings = new string[itemStacks.Length];
 			for (int i = 0, j = itemStacks.Length; i < j; i++)
 			{

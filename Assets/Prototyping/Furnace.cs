@@ -50,7 +50,7 @@ public class Furnace : Crafter
 
 	private void TryCraft()
 	{
-		if (input.GetAll().Length > 0)
+		if (input.GetAllItemStacks().Length > 0)
 		{
 			if (BurnTime == 0)
 			{

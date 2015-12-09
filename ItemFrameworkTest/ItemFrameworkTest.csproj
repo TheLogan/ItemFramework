@@ -58,6 +58,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ItemStackTest.cs" />
     <Compile Include="ContainerTest.cs" />
+    <Compile Include="ShapedCraftingTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ItemFramework.CSharp.csproj">

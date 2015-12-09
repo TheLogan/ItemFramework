@@ -36,7 +36,7 @@ namespace ItemFramework
 
 		public virtual bool CheckRecipe(Container input)
 		{
-			var inputStacks = input.GetAll();
+			var inputStacks = input.GetAllItemStacks();
 			var recipeIngredientsList = RecipeIngredients.ToList();
 			foreach (var recipeIngredient in recipeIngredientsList)
 			{
