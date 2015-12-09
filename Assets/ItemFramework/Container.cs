@@ -1,10 +1,10 @@
-﻿using ItemFramework.Db;
+﻿using System;
+using ItemFramework.Db;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
 using Guid = System.Guid;
-using Serializable = System.SerializableAttribute;
 using String = System.String;
 using Type = System.Type;
 
@@ -22,7 +22,7 @@ namespace ItemFramework
 	/// <param name="args">Cancelable event - Set "args.Cancel = true;" if ItemStack shouldn't be added</param>
 	public delegate void ContainerValidatorEvent(ItemStack itemStack, CancelEventArgs args);
 
-	[Serializable]
+	[System.Serializable]
 	[DbObject("containers")]
 	public class Container : DbObject
 	{
@@ -428,7 +428,7 @@ namespace ItemFramework
 			//If asked to remove part of the stack, create a new stack of the requested amount and remove said amount from the original stack
 			var returnStack = new ItemStack
 			{
-				Item = tempStack.Item,
+				Item = (Item)Activator.CreateInstance(tempStack.Item.GetType()),
 				Amount = amount
 			};
 

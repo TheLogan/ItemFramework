@@ -59,6 +59,7 @@
     <Compile Include="ItemStackTest.cs" />
     <Compile Include="ContainerTest.cs" />
     <Compile Include="ShapedCraftingTest.cs" />
+    <Compile Include="ShapelessCraftingTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ItemFramework.CSharp.csproj">

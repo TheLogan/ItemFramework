@@ -36,17 +36,21 @@ namespace ItemFramework
 
 		public virtual bool CheckRecipe(Container input)
 		{
-			var inputStacks = input.GetAllItemStacks();
-			var recipeIngredientsList = RecipeIngredients.ToList();
-			foreach (var recipeIngredient in recipeIngredientsList)
+			if (input.GetAllItemStacks().Length != RecipeIngredients.Count(x => x != null)) return false;
+			
+			var clonedItemStacks = ItemStack.CloneMultiple(true, input.GetAllItemStacks()).ToList();
+			for (int i = 0; i < RecipeIngredients.Length; i++)
 			{
-				var recipeIngredientType = recipeIngredient.Item.GetType();
-				if (input.Count(recipeIngredientType) < recipeIngredient.Amount)
-				{
-					return false;
-				}
+				var select = clonedItemStacks.Where(x => x.Item.GetType() == recipeIngredients[i].Item.GetType())
+					.Where(x => x.Amount >= recipeIngredients[i].Amount)
+					.OrderBy(x => x.Amount)
+					.FirstOrDefault();
+
+				if (select == null) return false;
+
+				clonedItemStacks.Remove(select);
 			}
-			return true;
+			return clonedItemStacks.Count == 0;
 		}
 	}
 }

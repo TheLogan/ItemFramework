@@ -18,17 +18,17 @@ namespace ItemFrameworkTest
 
 		
 		[TestMethod]
-		public void CorrectRecipeTest()
+		public void CorrectShapedRecipeTest()
 		{
-			var stone = new Item() {Name = "Stone", StackSize = 16};
-			var stick = new Item() {Name = "Stick", StackSize = 4};
-			var spade = new Item() {Name = "Spade", StackSize = 1};
+			var stone = new StoneItem();
+			var stick = new StickItem();
+			var spade = new SpadeItem();
 
 
 			var stoneStack = new ItemStack(stone, 1, false, true);
 			var stickStack = new ItemStack(stick, 1, false, true);
 
-			var shapedRecipe = new ShapedCraftingRecipe()
+			var shapedRecipe = new ShapedTestingRecipe()
 			{
 				RecipeIngredients = new ItemStack[]
 				{
@@ -58,15 +58,15 @@ namespace ItemFrameworkTest
 		[TestMethod]
 		public void IncorrectInputItemsPlacementTest()
 		{
-			var stone = new Item() { Name = "Stone", StackSize = 16 };
-			var stick = new Item() { Name = "Stick", StackSize = 4 };
-			var spade = new Item() { Name = "Spade", StackSize = 1 };
+			var stone = new StoneItem();
+			var stick = new StickItem();
+			var spade = new SpadeItem();
 
 
 			var stoneStack = new ItemStack(stone, 1, false, true);
 			var stickStack = new ItemStack(stick, 1, false, true);
 
-			var shapedRecipe = new ShapedCraftingRecipe()
+			var shapedRecipe = new ShapedTestingRecipe()
 			{
 				RecipeIngredients = new ItemStack[]
 				{
@@ -94,7 +94,7 @@ namespace ItemFrameworkTest
 			Assert.IsFalse(shapedRecipe.CheckRecipe(craftingField));
 
 			craftingField.Remove(1);
-			var testItem = new Item() {Name = "Test",StackSize = 16};
+			var testItem = new UnitTestItem(16);
 			craftingField.Add(1, new ItemStack(testItem));
 			
 			Assert.IsFalse(shapedRecipe.CheckRecipe(craftingField));
@@ -103,15 +103,15 @@ namespace ItemFrameworkTest
 		[TestMethod]
 		public void IncorrectInputItemsTest()
 		{
-			var stone = new Item() { Name = "Stone", StackSize = 16 };
-			var stick = new Item() { Name = "Stick", StackSize = 4 };
-			var spade = new Item() { Name = "Spade", StackSize = 1 };
+			var stone = new StoneItem();
+			var stick = new StickItem();
+			var spade = new SpadeItem();
 
 
 			var stoneStack = new ItemStack(stone, 1, false, true);
 			var stickStack = new ItemStack(stick, 1, false, true);
 
-			var shapedRecipe = new ShapedCraftingRecipe()
+			var shapedRecipe = new ShapedTestingRecipe()
 			{
 				RecipeIngredients = new ItemStack[]
 				{
@@ -136,6 +136,11 @@ namespace ItemFrameworkTest
 			craftingField.Add(14, new ItemStack(stick));
 
 			Assert.IsFalse(shapedRecipe.CheckRecipe(craftingField));
+		}
+
+		class ShapedTestingRecipe : ShapedCraftingRecipe
+		{
+			
 		}
 	}
 }

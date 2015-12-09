@@ -5,7 +5,7 @@ using Newtonsoft.Json.Utilities;
 
 namespace ItemFramework
 {
-	public class ShapedCraftingRecipe : CraftingRecipe
+	public abstract class ShapedCraftingRecipe : CraftingRecipe
 	{
 		public int width;
 

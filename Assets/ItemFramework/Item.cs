@@ -1,6 +1,6 @@
 ﻿namespace ItemFramework
 {
-	public class Item
+	public abstract class Item
 	{
 		public string Name { get; set; }
 		public int StackSize { get; set; }
