@@ -14,6 +14,6 @@ public class RecipeBronzeIngot : FurnaceRecipe
 		{
 			new ItemStack(new ItemBronzeIngot(), true, true)
 		};
-		ProgressTime = 0.15f;
+		ProgressTime = 15;
 	}
 }
