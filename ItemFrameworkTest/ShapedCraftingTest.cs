@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ItemFramework;
+﻿using ItemFramework;
 using ItemFramework.Db;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -12,6 +7,9 @@ namespace ItemFrameworkTest
 	[TestClass]
 	public class ShapedCraftingTest
 	{
+		/// <summary>
+		/// Set up the database for use in the TestMethods
+		/// </summary>
 		[TestInitialize]
 		public void Init()
 		{

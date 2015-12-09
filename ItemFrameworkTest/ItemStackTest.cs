@@ -7,6 +7,9 @@ namespace ItemFrameworkTest
 	[TestClass]
 	public class ItemStackTest
 	{
+		/// <summary>
+		/// Set up the database for use in the TestMethods
+		/// </summary>
 		[TestInitialize]
 		public void Init()
 		{

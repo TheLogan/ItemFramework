@@ -10,15 +10,30 @@ using Type = System.Type;
 
 namespace ItemFramework
 {
+	/// <summary>
+	/// Event for change in Container content
+	/// </summary>
 	public delegate void ContainerChangedEvent();
 
+	/// <summary>
+	/// Event to validate incomming ItemStack to Container
+	/// </summary>
+	/// <param name="itemStack">The ItemStack to validate</param>
+	/// <param name="args">Cancelable event - Set "args.Cancel = true;" if ItemStack shouldn't be added</param>
 	public delegate void ContainerValidatorEvent(ItemStack itemStack, CancelEventArgs args);
 
 	[Serializable]
 	[DbObject("containers")]
 	public class Container : DbObject
 	{
+		/// <summary>
+		/// Dictionary over Guid to Container
+		/// </summary>
 		private static Dictionary<Guid, Container> dict = new Dictionary<Guid, Container>();
+
+		/// <summary>
+		/// Id of Container
+		/// </summary>
 		public override Guid Id
 		{
 			get
@@ -41,9 +56,15 @@ namespace ItemFramework
 			}
 		}
 
+		/// <summary>
+		/// Array of ItemStack Ids in the Container
+		/// </summary>
 		[DbProperty("items")]
 		private Guid?[] items;
-		
+
+		/// <summary>
+		/// Get the array of ItemStack Ids in the Container
+		/// </summary>
 		public Guid?[] Items
 		{
 			get
@@ -56,6 +77,9 @@ namespace ItemFramework
 			}
 		}
 
+		/// <summary>
+		/// Get the array of ItemStacks in the Container
+		/// </summary>
 		public ItemStack[] ItemStacks
 		{
 			get
@@ -69,24 +93,59 @@ namespace ItemFramework
 			}
 		}
 
-		public event ContainerValidatorEvent Validator;
+		/// <summary>
+		/// Event for change in Container content
+		/// </summary>
 		public event ContainerChangedEvent Changed;
 
+		/// <summary>
+		/// Event to validate incomming ItemStack to Container
+		/// </summary>
+		public event ContainerValidatorEvent Validator;
+
+		/// <summary>
+		/// Number of slots in Container
+		/// </summary>
 		[DbProperty("slots")]
 		public int Slots { get; private set; }
+
+		/// <summary>
+		/// Width of the Container
+		/// </summary>
 		[DbProperty("width")]
 		public int Width { get; set; }
 
-		public Container(int slots = 20)
+		/// <summary>
+		/// Height of the Container
+		/// </summary>
+		public int Height
+		{
+			get
+			{
+				return Mathf.CeilToInt(Slots / (float)Width);
+			}
+		}
+
+		/// <summary>
+		/// Construct new Container
+		/// </summary>
+		/// <param name="slots">Number of slots (default 20)</param>
+		/// <param name="width">Width of Container (default 10)</param>
+		public Container(int slots = 20, int width = 10)
 		{
 			Slots = slots;
+			Width = width;
 
-			ItemStack.Empty += ItemStack_Empty;
+			ItemStack.Empty += onItemStackEmpty;
 
 			SaveToDb();
 		}
 
-		private void ItemStack_Empty(Guid itemStackId)
+		/// <summary>
+		/// Called when an ItemStack empties
+		/// </summary>
+		/// <param name="itemStackId"></param>
+		private void onItemStackEmpty(Guid itemStackId)
 		{
 			if (Items.Contains(itemStackId))
 			{
@@ -95,42 +154,50 @@ namespace ItemFramework
 		}
 
 		/// <summary>
-		/// Will attempt to add itemstack to the index, if the index is empty it will succeed,
-		/// if the index is not empty it will attempt to place at the nearest empty, if there are non it will fail,
-		/// if you rather want to replace the current stack at index with a new one, use Replace.
-		/// Returns unplacable items, usually because there are not enough empty spaces
+		/// Add ItemStack to Container at specific slot.
+		/// If it's already used, but samt Item, it will try to add the amount to the stack.
 		/// </summary>
-		/// <param name="index">The index in the inventory the item should be placed on</param>
-		/// <param name="type">The item type and amount in the shape of an item stack</param>
-		/// <returns></returns>
-		public ItemStack Add(int index, ItemStack type)
-		{ //TODO take max stack sizes into account
-
+		/// <param name="index">Index of slot</param>
+		/// <param name="stack">ItemStack to add</param>
+		/// <returns>Excess or null if the whole ItemStack was added</returns>
+		public ItemStack Add(int index, ItemStack stack)
+		{
 			//If the index is null just add the new items
 			if (!Items[index].HasValue)
 			{
-				Items[index] = type.GetPersistant().Id;
+				Items[index] = stack.GetPersistant().Id;
+				return null;
 			}
 			else //If it's not null find a different index to place it at
 			{
-				var indexes = new List<int>();
-				for (var i = 0; i < Items.Length; i++)
+				ItemStack tmp = Get(index);
+				if (tmp.Item.GetType() == stack.Item.GetType() && (tmp.Amount < tmp.Item.StackSize || !tmp.IsLimited))
 				{
-					//Find all empty places in the inventory
-					if (Items[i].HasValue)
-						indexes.Add(i);
-				}
-				//If there are no empty places, just return the itemStack.
-				if (indexes.Count == 0)
-					return type;
+					int amountToAdd = stack.Amount;
+					if (tmp.IsLimited)
+					{
+						amountToAdd = Mathf.Min(tmp.Item.StackSize - tmp.Amount, stack.Amount);
+					}
 
-				var closest = indexes.Aggregate((x, y) => Mathf.Abs(x - index) < Mathf.Abs(y - index) ? x : y); //Find the closest empty index
-				Items[closest] = type.GetPersistant().Id;
-				return null;
+					tmp.Amount += amountToAdd;
+					stack.Amount -= amountToAdd;
+
+					if (stack.Amount == 0)
+					{
+						return null;
+					}
+				}
 			}
-			return null;
+
+			return stack;
 		}
 
+		/// <summary>
+		/// Check if ItemStacks can be added to the Container.
+		/// If checking multiple, one ItemStack can make it all fail.
+		/// </summary>
+		/// <param name="stacks">ItemStacks to check</param>
+		/// <returns>Whether the ItemStacks can be added.</returns>
 		public bool CanAdd(params ItemStack[] stacks)
 		{
 			ItemStack[] clonedStacks = ItemStack.CloneMultiple(true, stacks);
@@ -209,11 +276,11 @@ namespace ItemFramework
 		}
 
 		/// <summary>
-		/// Add item stack to the first empty slot in inventory
-		/// If there are no empty slots, returns the item stack.
+		/// Add ItemStacks to the Container.
+		/// Fills already containing ItemStacks of same Item first.
 		/// </summary>
-		/// <param name="stacks"></param>
-		/// <returns></returns>
+		/// <param name="stacks">ItemStacks to add</param>
+		/// <returns>Excess ItemStacks</returns>
 		public ItemStack[] Add(params ItemStack[] stacks)
 		{
 			List<ItemStack> clonedStacks = new List<ItemStack>(ItemStack.CloneMultiple(true, stacks));
@@ -296,11 +363,11 @@ namespace ItemFramework
 		}
 
 		/// <summary>
-		/// Replaces an item stack at a given index with a new item stack
+		/// Replaces an ItemStack at a given index with a new ItemStack
 		/// </summary>
-		/// <param name="index"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
+		/// <param name="index">Slot index</param>
+		/// <param name="type">ItemStack to replace it with</param>
+		/// <returns>Current ItemStack at given index</returns>
 		public ItemStack Replace(int index, ItemStack type)
 		{
 			ItemStack tempStack = Get(index);
@@ -313,10 +380,10 @@ namespace ItemFramework
 		}
 
 		/// <summary>
-		/// Takes an index and returns what's in that slot
+		/// Removes an ItemStack at a given index
 		/// </summary>
-		/// <param name="index">The inventory index to look in</param>
-		/// <returns></returns>
+		/// <param name="index">Slot index</param>
+		/// <returns>ItemStack at given index</returns>
 		public ItemStack Remove(int index)
 		{
 			ItemStack tempStack = Get(index);
@@ -330,51 +397,57 @@ namespace ItemFramework
 		}
 
 		/// <summary>
-		/// Removes a set amount of items from a stack and returns them as a new stack
+		/// Removes a set amount from an ItemStack at a given index and returns them as a new ItemStack
 		/// </summary>
-		/// <param name="index"></param>
-		/// <param name="amount"></param>
-		/// <returns></returns>
+		/// <param name="index">Slot index</param>
+		/// <param name="amount">Amount to remove from ItemStack</param>
+		/// <returns>ItemStack containing the removed items</returns>
 		public ItemStack Remove(int index, int amount)
 		{
 			//If there are no items to remove, remove no items
-			if (Items[index].HasValue)
+			if (!Items[index].HasValue)
+			{
 				return null;
+			}
 
 			//If asked to remove the amount or more of the stack, just remove the whole stack
 			var tempStack = Get(index);
 			if (amount >= tempStack.Amount)
 			{
 				Items[index] = null;
+
 				if (Changed != null)
 				{
 					Changed.Invoke();
 					SaveToDb();
 				}
+
 				return tempStack;
 			}
 
 			//If asked to remove part of the stack, create a new stack of the requested amount and remove said amount from the original stack
 			var returnStack = new ItemStack
 			{
-				Item = new Item { Name = tempStack.Item.Name },
+				Item = tempStack.Item,
 				Amount = amount
 			};
 
 			tempStack.Amount -= amount;
+
 			if (Changed != null)
 			{
 				Changed.Invoke();
 				SaveToDb();
 			}
+
 			return tempStack;
 		}
 
 		/// <summary>
-		/// find an itemstack matching current type and return it
+		/// Remove ItemStacks from the Container.
 		/// </summary>
-		/// <param name="stacks"></param>
-		/// <returns></returns>
+		/// <param name="stacks">ItemStacks to remove</param>
+		/// <returns>Removed ItemStacks</returns>
 		public ItemStack[] Remove(params ItemStack[] stacks)
 		{
 			bool containerChanged = false;
@@ -419,18 +492,31 @@ namespace ItemFramework
 		}
 
 
-		public bool Contains(ItemStack stack)
+		/// <summary>
+		/// Check if the Container contains Item.
+		/// </summary>
+		/// <param name="t">Type of item to count</param>
+		/// <returns>Whether the Container contains Item</returns>
+		public bool Contains(Type t)
 		{
-			return Items.Any(x => x.HasValue && ItemStack.GetById(x.Value).Item.Name == stack.Item.Name);
+			return Items.Any(x => x.HasValue && ItemStack.GetById(x.Value).Item.GetType() == t);
 		}
 
-
-		public int Contains(Type t)
+		/// <summary>
+		/// Get amount of Item.
+		/// </summary>
+		/// <param name="t">Type of item to count</param>
+		/// <returns>Amount of contained Item</returns>
+		public int Count(Type t)
 		{
 			return Items.Where(x => x.HasValue && ItemStack.GetById(x.Value).Item.GetType() == t).Sum(x => ItemStack.GetById(x.Value).Amount);
-			//            return tempStackId.HasValue ? ItemStack.GetById(tempStackId.Value).Amount : 0;
 		}
 
+		/// <summary>
+		/// Get ItemStack at a given index.
+		/// </summary>
+		/// <param name="index">Slot index</param>
+		/// <returns>ItemStack at given index</returns>
 		public ItemStack Get(int index)
 		{
 			if (index < 0 || index >= Items.Length) return null;
@@ -442,6 +528,10 @@ namespace ItemFramework
 			return itemStack;
 		}
 
+		/// <summary>
+		/// Get all ItemStacks (except nulls) in Container.
+		/// </summary>
+		/// <returns>ItemStacks in Container</returns>
 		public ItemStack[] GetAllItemStacks()
 		{
 			List<ItemStack> itemStacks = new List<ItemStack>();
@@ -455,6 +545,10 @@ namespace ItemFramework
 			return itemStacks.ToArray();
 		}
 
+		/// <summary>
+		/// Debugable string for Container
+		/// </summary>
+		/// <returns>Debugable string</returns>
 		public override string ToString()
 		{
 			ItemStack[] itemStacks = GetAllItemStacks();

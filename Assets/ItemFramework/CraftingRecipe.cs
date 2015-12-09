@@ -41,7 +41,7 @@ namespace ItemFramework
 			foreach (var recipeIngredient in recipeIngredientsList)
 			{
 				var recipeIngredientType = recipeIngredient.Item.GetType();
-				if (input.Contains(recipeIngredientType) < recipeIngredient.Amount)
+				if (input.Count(recipeIngredientType) < recipeIngredient.Amount)
 				{
 					return false;
 				}

@@ -52,7 +52,7 @@ namespace ItemFramework
 				foreach (var recipeIngredient in recipeIngredientsList)
 				{
 					var recipeIngredientType = recipeIngredient.Item.GetType();
-					if (incommingContainer.Contains(recipeIngredientType) < recipeIngredient.Amount)
+					if (incommingContainer.Count(recipeIngredientType) < recipeIngredient.Amount)
 					{
 						viable = false;
 					}

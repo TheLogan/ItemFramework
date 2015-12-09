@@ -31,9 +31,9 @@ public class GuiHandler : MonoBehaviour
 
 	void Update()
 	{
-		TinText.text = "Tin Ore : " + FurnaceScript.input.Contains(typeof(ItemTinOre)).ToString();
-		CopperText.text = "Copper Ore : " + FurnaceScript.input.Contains(typeof(ItemCopperOre)).ToString();
-		BronzeText.text = "Bronze Ingot : " + FurnaceScript.output.Contains(typeof(ItemBronzeIngot)).ToString();
+		TinText.text = "Tin Ore : " + FurnaceScript.input.Count(typeof(ItemTinOre)).ToString();
+		CopperText.text = "Copper Ore : " + FurnaceScript.input.Count(typeof(ItemCopperOre)).ToString();
+		BronzeText.text = "Bronze Ingot : " + FurnaceScript.output.Count(typeof(ItemBronzeIngot)).ToString();
 		ItemStack fuelStack = FurnaceScript.fuel.Get(0);
 		FuelText.text = "Fuel : " + (fuelStack != null ? fuelStack.Amount : 0).ToString();
 		BurnProgressText.text = "Burn progress : " + Mathf.RoundToInt(FurnaceScript.BurnProgress * 100) + "%";
