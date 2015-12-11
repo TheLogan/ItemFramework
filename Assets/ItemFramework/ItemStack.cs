@@ -7,10 +7,10 @@ using System.ComponentModel;
 
 namespace ItemFramework
 {
-	public delegate void ItemStackEmptyEvent(Guid itemStackId);
+	public delegate void ItemStackEmptyEvent(ItemStack itemStack);
 
 	[DbObject("itemstack")]
-	public class ItemStack : DbObject
+	public class ItemStack : DbItemStack
 	{
 		private static Dictionary<Guid, ItemStack> dict = new Dictionary<Guid, ItemStack>();
 		public override Guid Id
@@ -28,6 +28,10 @@ namespace ItemFramework
 					{
 						dict.Remove(id);
 						DbManager.Instance.Handler.Delete(this);
+					}
+					if (dict.ContainsKey(value))
+					{
+						dict.Remove(value);
 					}
 					dict.Add(value, this);
 					id = value;
@@ -104,7 +108,7 @@ namespace ItemFramework
 		private bool isTemp;
 
 		[DbProperty("item")]
-		private Item item;
+		private string item;
 		[DbProperty("amount")]
 		private int amount;
 
@@ -114,7 +118,11 @@ namespace ItemFramework
 		{
 			get
 			{
-				return item;
+				if (item == null)
+				{
+					return null;
+				}
+				return FrameworkRegistry.GetItem(item);
 			}
 
 			set
@@ -140,7 +148,7 @@ namespace ItemFramework
 
 					if (Empty != null)
 					{
-						Empty.Invoke(Id);
+						Empty.Invoke(this);
 					}
 
 					DbManager.Instance.Handler.Delete(this);
@@ -150,7 +158,7 @@ namespace ItemFramework
 						dict.Remove(Id);
 					}
 				}
-				item = value;
+				item = value != null ? value.Identifier : null;
 				if (!IsTemp)
 				{
 					DbManager.Instance.Handler.Save();
@@ -171,9 +179,9 @@ namespace ItemFramework
 				{
 					throw new System.InvalidOperationException("Can't modify locked ItemStack");
 				}
-				if (isLimited && item != null && item.StackSize < value)
+				if (isLimited && Item != null && Item.StackSize < value)
 				{
-					value = item.StackSize;
+					value = Item.StackSize;
 				}
 				if (value == 0)
 				{
@@ -181,7 +189,7 @@ namespace ItemFramework
 
 					if (Empty != null)
 					{
-						Empty.Invoke(Id);
+						Empty.Invoke(this);
 					}
 
 					DbManager.Instance.Handler.Delete(this);
@@ -210,10 +218,10 @@ namespace ItemFramework
 			{
 				if (value)
 				{
-					if (item != null && item.StackSize < Amount)
+					if (Item != null && Item.StackSize < Amount)
 					{
 						// Ignore isLocked
-						amount = item.StackSize;
+						amount = Item.StackSize;
 					}
 				}
 				isLimited = value;
@@ -240,23 +248,33 @@ namespace ItemFramework
 			}
 		}
 
-		public ItemStack(bool temp = false)
+		protected ItemStack() { }
+
+		public ItemStack(bool temp = false, Guid id = new Guid())
 		{
-			if (!temp)
+			if (temp && id != Guid.Empty || !temp)
 			{
-				SaveToDb();
+				temp = false;
+				if (id != Guid.Empty)
+				{
+
+				}
+				else
+				{
+					SaveToDb();
+				}
 			}
 			isTemp = temp;
 		}
 
-		public ItemStack(Item item, int amount = 1, bool isLocked = false, bool temp = false) : this(temp)
+		public ItemStack(Item item, int amount = 1, bool isLocked = false, bool temp = false, Guid id = new Guid()) : this(temp, id)
 		{
 			Amount = amount;
 			Item = item;
 			this.isLocked = isLocked;
 		}
 
-		public ItemStack(Item item, bool isLocked, bool temp) : this(item, 1, isLocked, temp) { }
+		public ItemStack(Item item, bool isLocked, bool temp, Guid id = new Guid()) : this(item, 1, isLocked, temp, id) { }
 
 		public void SetLocked()
 		{

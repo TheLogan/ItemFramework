@@ -7,19 +7,22 @@ namespace ItemFrameworkTest
 	[TestClass]
 	public class ItemStackTest
 	{
+		private Common common = new Common();
+
 		/// <summary>
 		/// Set up the database for use in the TestMethods
 		/// </summary>
 		[TestInitialize]
 		public void Init()
 		{
+			FrameworkRegistry.RegisterMod(common);
 			DbManager.Instance.Handler = new DbFileHandler("unittest.json");
 		}
 
 		[TestMethod]
 		public void ItemStackTypeTest()
 		{
-			Item item = Common.GetItem();
+			Item item = common.GetItem();
 			ItemStack itemStack = new ItemStack();
 			Assert.AreEqual(null, itemStack.Item);
 			itemStack.Item = item;
@@ -31,7 +34,7 @@ namespace ItemFrameworkTest
 		[TestMethod]
 		public void ItemStackMaxStackSizeTest()
 		{
-			Item item = Common.GetItem();
+			Item item = common.GetItem();
 			ItemStack itemStack = new ItemStack();
 			itemStack.Item = item;
 			itemStack.Amount = Common.ItemStackSize * 2;
@@ -41,7 +44,7 @@ namespace ItemFrameworkTest
 		[TestMethod]
 		public void ItemStackLimitlessSizeTest()
 		{
-			Item item = Common.GetItem();
+			Item item = common.GetItem();
 			ItemStack itemStack = new ItemStack();
 			itemStack.Item = item;
 			itemStack.IsLimited = false;

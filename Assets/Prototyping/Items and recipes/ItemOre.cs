@@ -1,6 +1,5 @@
 ﻿using ItemFramework;
 
-public class ItemOre : Item
+public abstract class ItemOre : Item
 {
-
 }

@@ -24,7 +24,7 @@ namespace ItemFramework
 
 	[System.Serializable]
 	[DbObject("containers")]
-	public class Container : DbObject
+	public class Container : DbContainer
 	{
 		/// <summary>
 		/// Dictionary over Guid to Container
@@ -49,6 +49,10 @@ namespace ItemFramework
 					{
 						dict.Remove(id);
 						DbManager.Instance.Handler.Delete(this);
+					}
+					if (dict.ContainsKey(value))
+					{
+						dict.Remove(value);
 					}
 					dict.Add(value, this);
 					id = value;
@@ -131,25 +135,36 @@ namespace ItemFramework
 		/// </summary>
 		/// <param name="slots">Number of slots (default 20)</param>
 		/// <param name="width">Width of Container (default 10)</param>
-		public Container(int slots = 20, int width = 10)
+		/// <param name="id">Db Id of container</param>
+		public Container(int slots = 20, int width = 10, Guid id = new Guid())
 		{
 			Slots = slots;
 			Width = width;
-
+			
 			ItemStack.Empty += onItemStackEmpty;
 
-			SaveToDb();
+			if (id == Guid.Empty)
+			{
+				SaveToDb();
+			} else
+			{
+				this.Id = id;
+			}
 		}
 
 		/// <summary>
 		/// Called when an ItemStack empties
 		/// </summary>
-		/// <param name="itemStackId"></param>
-		private void onItemStackEmpty(Guid itemStackId)
+		/// <param name="itemStack"></param>
+		private void onItemStackEmpty(ItemStack itemStack)
 		{
-			if (Items.Contains(itemStackId))
+			var id = itemStack.Id;
+			if (id != Guid.Empty)
 			{
-				items[System.Array.IndexOf(items, itemStackId)] = null;
+				if (Items.Contains(id))
+				{
+					items[System.Array.IndexOf(items, id)] = null;
+				}
 			}
 		}
 

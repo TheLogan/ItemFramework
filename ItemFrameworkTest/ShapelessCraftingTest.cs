@@ -7,12 +7,15 @@ namespace ItemFrameworkTest
 	[TestClass]
 	public class ShapelessCraftingTest
 	{
+		private Common common = new Common();
+
 		/// <summary>
 		/// Set up the database for use in the TestMethods
 		/// </summary>
 		[TestInitialize]
 		public void Init()
 		{
+			FrameworkRegistry.RegisterMod(common);
 			DbManager.Instance.Handler = new DbFileHandler("unittest.json");
 		}
 
@@ -23,8 +26,8 @@ namespace ItemFrameworkTest
 		[TestMethod]
 		public void CorrectShapelessRecipeTest()
 		{
-			var stick = new TestItemStick();
-			var stone = new TestItemStone();
+			var stick = FrameworkRegistry.GetItem("Stick");
+			var stone = FrameworkRegistry.GetItem("Stone");
 			
 			var stoneStack = new ItemStack(stone, 12, false, true);
 			var stoneStack2 = new ItemStack(stone, 12, false, true);
@@ -47,8 +50,8 @@ namespace ItemFrameworkTest
 		[TestMethod]
 		public void IncorrectShapelessAmount()
 		{
-			var stick = new TestItemStick();
-			var stone = new TestItemStone();
+			var stick = FrameworkRegistry.GetItem("Stick");
+			var stone = FrameworkRegistry.GetItem("Stone");
 
 			var stoneStack = new ItemStack(stone, 2, false, true);
 			var stoneStack2 = new ItemStack(stone, 2, false, true);
@@ -71,8 +74,8 @@ namespace ItemFrameworkTest
 		[TestMethod]
 		public void IncorrectShapelessInputTest()
 		{
-			var stick = new TestItemStick();
-			var stone = new TestItemStone();
+			var stick = FrameworkRegistry.GetItem("Stick");
+			var stone = FrameworkRegistry.GetItem("Stone");
 
 			var stoneStack = new ItemStack(stone, 30, false, true);
 			var stickStack = new ItemStack(stick, 30, false, true);
@@ -93,9 +96,9 @@ namespace ItemFrameworkTest
 		[TestMethod]
 		public void IncorrectShapelessStacksTest()
 		{
-			var stick = new TestItemStick();
-			var stone = new TestItemStone();
-			
+			var stick = FrameworkRegistry.GetItem("Stick");
+			var stone = FrameworkRegistry.GetItem("Stone");
+
 			var stoneStack = new ItemStack(stone, 30, false, true);
 			var stickStack = new ItemStack(stick, 30, false, true);
 			var stickStack2 = new ItemStack(stick, 30, false, true);
@@ -109,68 +112,6 @@ namespace ItemFrameworkTest
 
 			Assert.IsFalse(recipe.CheckRecipe(craftingField));
 		}
-
-
-		#region auxiliary classes
-
-		/// <summary>
-		/// This is the recipe class used for testing, it's derived from the base CraftingRecipe class
-		/// </summary>
-		class TestSpadeRecipe : CraftingRecipe
-		{
-			public TestSpadeRecipe() : base()
-			{
-				RecipeIngredients = new ItemStack[3]
-				{
-					new ItemStack(new TestItemStick(), 10, true, true),
-					new ItemStack(new TestItemStone(), 10, true, true),
-                    new ItemStack(new TestItemStone(), 3, true, true)
-				};
-				
-				Output = new ItemStack[1]
-				{
-					new ItemStack(new TestItemSpade(), true, true)
-				};
-			}
-		}
-
-		/// <summary>
-		/// Test stick item used in the recipe
-		/// </summary>
-		class TestItemStick : Item
-		{
-			public TestItemStick()
-			{
-				Name = "Stick item";
-				StackSize = 64;
-			}
-		}
-
-		/// <summary>
-		/// Test stone item used in the recipe
-		/// </summary>
-		class TestItemStone : Item
-		{
-			public TestItemStone()
-			{
-				Name = "Stone item";
-				StackSize = 32;
-			}
-		}
-
-		/// <summary>
-		/// Test spade item used as recipe output
-		/// </summary>
-		class TestItemSpade : Item
-		{
-			public TestItemSpade()
-			{
-				Name = "Spade";
-				StackSize = 1;
-			}
-		}
-
-		#endregion
 	}
 }
 

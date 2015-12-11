@@ -1,60 +1,130 @@
-﻿using ItemFramework;
+﻿using System;
+using System.Collections.Generic;
+using ItemFramework;
 
 namespace ItemFrameworkTest
 {
-	class Common
+	class Common : IMod
 	{
 		public static readonly string ItemName = "UnitTest";
 		public static readonly int ItemStackSize = 64;
 
-		public static Item GetItem()
+		public Item GetItem()
 		{
-			return new UnitTestItem()
+			return FrameworkRegistry.GetItem(ItemName);
+		}
+
+		public ItemStack GetItemStack(int amount)
+		{
+			return new ItemStack(GetItem(), amount, false, true);
+		}
+
+		public Dictionary<string, Type> RegisterItems()
+		{
+			return new Dictionary<string, Type>()
 			{
-				Name = ItemName,
-				StackSize = ItemStackSize
+				{ "UnitTest", typeof(UnitTestItem) },
+				{ "Stick", typeof(StickItem) },
+				{ "Stone", typeof(StoneItem) },
+				{ "Spade", typeof(SpadeItem) }
 			};
 		}
 
-		public static ItemStack GetItemStack(int amount)
+		public Type[] RegisterRecipes()
 		{
-			return new ItemStack(GetItem(), amount, false, true);
+			return null;
 		}
 	}
 
 	class UnitTestItem : Item
 	{
-		public UnitTestItem(int stackSize = -1)
+		public UnitTestItem()
 		{
 			Name = Common.ItemName;
-			StackSize = stackSize <= 0 ? Common.ItemStackSize : stackSize;
+			StackSize = Common.ItemStackSize;
 		}
 	}
 
-	class StoneItem : Item
+	/// <summary>
+	/// Test stone item used as recipe input
+	/// </summary>
+	public class StoneItem : Item
 	{
-		public StoneItem(int stackSize = 16)
+		public StoneItem()
 		{
 			Name = "Stone";
-			StackSize = stackSize;
+			StackSize = 64;
 		}
 	}
 
-	class StickItem : Item
+	/// <summary>
+	/// Test stick item used as recipe input
+	/// </summary>
+	public class StickItem : Item
 	{
-		public StickItem(int stackSize = 4)
+		public StickItem()
 		{
 			Name = "Stick";
-			StackSize = stackSize;
+			StackSize = 64;
 		}
 	}
 
-	class SpadeItem : Item
+	/// <summary>
+	/// Test spade item used as recipe output
+	/// </summary>
+	public class SpadeItem : Item
 	{
-		public SpadeItem(int stackSize = 1)
+		public SpadeItem()
 		{
 			Name = "Spade";
-			StackSize = stackSize;
+			StackSize = 1;
+		}
+	}
+
+	/// <summary>
+	/// This is the recipe class used for testing, it's derived from the base CraftingRecipe class
+	/// </summary>
+	public class TestSpadeRecipe : CraftingRecipe
+	{
+		public TestSpadeRecipe() : base()
+		{
+			RecipeIngredients = new ItemStack[3]
+			{
+					new ItemStack(FrameworkRegistry.GetItem("Stick"), 10, true, true),
+					new ItemStack(FrameworkRegistry.GetItem("Stone"), 10, true, true),
+					new ItemStack(FrameworkRegistry.GetItem("Stone"), 3, true, true)
+			};
+
+			Output = new ItemStack[1]
+			{
+					new ItemStack(FrameworkRegistry.GetItem("Spade"), true, true)
+			};
+		}
+	}
+
+	/// <summary>
+	/// A temporary class that derives from the Shaped Crafting Recipe
+	/// This is used as a recipe for all the tests above.
+	/// </summary>
+	class ShapedTestingRecipe : ShapedCraftingRecipe
+	{
+		public ShapedTestingRecipe() : base()
+		{
+			RecipeIngredients = new ItemStack[]
+			{
+					new ItemStack(FrameworkRegistry.GetItem("Stone"), 1, true, true),
+					new ItemStack(FrameworkRegistry.GetItem("Stick"), 1, true, true),
+					new ItemStack(FrameworkRegistry.GetItem("Stick"), 12, true, true)
+            };
+			width = 1;
+			Output = new[]
+			{
+					new ItemStack()
+					{
+						Item = FrameworkRegistry.GetItem("Spade"),
+						Amount = 1
+					}
+				};
 		}
 	}
 }

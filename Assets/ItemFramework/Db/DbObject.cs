@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using UnityEngine;
 using Guid = System.Guid;
 using InvalidOperationException = System.InvalidOperationException;
 
@@ -8,7 +7,7 @@ namespace ItemFramework.Db
 	public abstract class DbObject
 	{
 		[DbProperty("id")]
-		internal Guid id;
+		public Guid id;
 
 		public abstract Guid Id { get; internal set; }
 
@@ -22,6 +21,10 @@ namespace ItemFramework.Db
 
 		public object LoadFromDb()
 		{
+			if (IsInDb)
+			{
+				return DbManager.Instance.Handler.Load(Id);
+			}
 			return null;
 		}
 
@@ -46,7 +49,10 @@ namespace ItemFramework.Db
 
 		public void DeleteFromDb()
 		{
-
+			if (IsInDb)
+			{
+				DbManager.Instance.Handler.Delete(this);
+			}
 		}
 	}
 }

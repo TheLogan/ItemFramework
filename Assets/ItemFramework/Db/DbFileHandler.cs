@@ -67,6 +67,7 @@ namespace ItemFramework.Db
 		public DbFileHandler(string path)
 		{
 			Path = path;
+			Load();
 		}
 
 		public void Create(DbObject obj)
@@ -98,7 +99,7 @@ namespace ItemFramework.Db
 			Save();
 		}
 
-		public void Load()
+		private void Load()
 		{
 			using (FileStream fs = new FileStream(Path, FileMode.OpenOrCreate))
 			{
@@ -125,14 +126,26 @@ namespace ItemFramework.Db
 					{
 						DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
 					});
+
 				if (loadedData == null)
 				{
-					Debug.Log("No database found");
 					return;
 				}
+
 				dataContainer = loadedData;
-				Debug.Log(String.Format("Found {0} container(s) and {1} itemstack(s)", dataContainer.Containers.Count, dataContainer.ItemStacks.Count));
 			}
+		}
+
+		public object Load(Guid id)
+		{
+			Container c = dataContainer.Containers.FirstOrDefault(x => x.Id == id);
+
+			if (c != null)
+			{
+				return c;
+			}
+
+			return dataContainer.ItemStacks.FirstOrDefault(x => x.Id == id);
 		}
 
 		public void Save()

@@ -1,9 +1,11 @@
-﻿namespace ItemFramework.Db
+﻿using Guid = System.Guid;
+
+namespace ItemFramework.Db
 {
 	public interface IDbHandler
 	{
 		void Create(DbObject obj);
-		void Load();
+		object Load(Guid id);
 		void Save();
 		void Delete(DbObject obj);
 	}

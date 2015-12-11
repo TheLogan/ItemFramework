@@ -1,9 +1,11 @@
-﻿using ItemFramework;
+﻿using System;
+using ItemFramework;
 using ItemFramework.Db;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
-public class GuiHandler : MonoBehaviour
+public class GuiHandler : MonoBehaviour, IMod
 {
 	public Text TinText;
 	public Text CopperText;
@@ -15,18 +17,19 @@ public class GuiHandler : MonoBehaviour
 
 	void Awake()
 	{
+		FrameworkRegistry.RegisterMod(this);
 		DbManager.Instance.Handler = new DbFileHandler("test.json");
 	}
 
 	public void AddItems()
 	{
-		FurnaceScript.input.Add(new ItemStack(new ItemCopperOre(), 64));
-		FurnaceScript.input.Add(new ItemStack(new ItemTinOre(), 16));
+		FurnaceScript.input.Add(new ItemStack(FrameworkRegistry.GetItem("CopperOre"), 64));
+		FurnaceScript.input.Add(new ItemStack(FrameworkRegistry.GetItem("TinOre"), 16));
 	}
 
 	public void AddFuel()
 	{
-		FurnaceScript.fuel.Add(new ItemStack(new ItemCoal(), true, true));
+		FurnaceScript.fuel.Add(new ItemStack(FrameworkRegistry.GetItem("Coal"), true, true));
 	}
 
 	void Update()
@@ -38,5 +41,23 @@ public class GuiHandler : MonoBehaviour
 		FuelText.text = "Fuel : " + (fuelStack != null ? fuelStack.Amount : 0).ToString();
 		BurnProgressText.text = "Burn progress : " + Mathf.RoundToInt(FurnaceScript.BurnProgress * 100) + "%";
 		ProgressText.text = "Progress : " + Mathf.RoundToInt(FurnaceScript.Progress * 100) + "%";
+	}
+
+	public Dictionary<string, Type> RegisterItems()
+	{
+		return new Dictionary<string, Type>()
+		{
+			{ "CopperOre", typeof(ItemCopperOre) },
+			{ "TinOre", typeof(ItemTinOre) },
+			{ "BronzeIngot", typeof(ItemBronzeIngot) },
+			{ "Coal", typeof(ItemCoal) }
+		};
+	}
+
+	public Type[] RegisterRecipes()
+	{
+		return new[] {
+			typeof(RecipeBronzeIngot)
+		};
 	}
 }

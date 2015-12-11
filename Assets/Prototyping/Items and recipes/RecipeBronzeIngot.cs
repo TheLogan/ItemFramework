@@ -7,12 +7,12 @@ public class RecipeBronzeIngot : FurnaceRecipe
 	{
 		RecipeIngredients = new ItemStack[2]
 		{
-			new ItemStack(new ItemCopperOre(), 3, true, true),
-			new ItemStack(new ItemTinOre(), true, true)
+			new ItemStack(FrameworkRegistry.GetItem("CopperOre"), 3, true, true),
+			new ItemStack(FrameworkRegistry.GetItem("TinOre"), true, true)
 		};
 		Output = new ItemStack[1]
 		{
-			new ItemStack(new ItemBronzeIngot(), true, true)
+			new ItemStack(FrameworkRegistry.GetItem("BronzeIngot"), true, true)
 		};
 		ProgressTime = 15;
 	}

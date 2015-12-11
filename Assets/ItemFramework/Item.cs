@@ -1,7 +1,15 @@
-﻿namespace ItemFramework
+﻿using System.Collections.Generic;
+using UnityEngine;
+
+namespace ItemFramework
 {
 	public abstract class Item
 	{
+		/// <summary>
+		/// Identifier of Item
+		/// </summary>
+		public string Identifier { get; internal set; }
+
 		/// <summary>
 		/// Name of Item
 		/// </summary>
@@ -43,7 +51,7 @@
 		/// <returns>Debugable string</returns>
 		public override string ToString()
 		{
-			return "Item[Name=" + Name + "]";
+			return "Item[Name=" + Name + ",Identifier=" + Identifier + "]";
 		}
 
 	}

@@ -8,12 +8,15 @@ namespace ItemFrameworkTest
 	[TestClass]
 	public class ShapedCraftingTest
 	{
+		private Common common = new Common();
+
 		/// <summary>
 		/// Set up the database for use in the TestMethods
 		/// </summary>
 		[TestInitialize]
 		public void Init()
 		{
+			FrameworkRegistry.RegisterMod(common);
 			DbManager.Instance.Handler = new DbFileHandler("unittest.json");
 		}
 
@@ -24,8 +27,8 @@ namespace ItemFrameworkTest
 		[TestMethod]
 		public void CorrectShapedRecipeTest()
 		{
-			var stone = new TestItemStone();
-			var stick = new TestItemStick();
+			var stick = FrameworkRegistry.GetItem("Stick");
+			var stone = FrameworkRegistry.GetItem("Stone");
 
 			var shapedRecipe = new ShapedTestingRecipe();
 			
@@ -43,8 +46,8 @@ namespace ItemFrameworkTest
 		[TestMethod]
 		public void CorrectShapedRecipeDifferentPlacementTest()
 		{
-			var stone = new TestItemStone();
-			var stick = new TestItemStick();
+			var stick = FrameworkRegistry.GetItem("Stick");
+			var stone = FrameworkRegistry.GetItem("Stone");
 
 			var shapedRecipe = new ShapedTestingRecipe();
 			
@@ -63,8 +66,8 @@ namespace ItemFrameworkTest
 		[TestMethod]
 		public void IncorrectInputItemsPlacementTest()
 		{
-			var stone = new TestItemStone();
-			var stick = new TestItemStick();
+			var stick = FrameworkRegistry.GetItem("Stick");
+			var stone = FrameworkRegistry.GetItem("Stone");
 
 			var shapedRecipe = new ShapedTestingRecipe();
 
@@ -77,7 +80,7 @@ namespace ItemFrameworkTest
 			Assert.IsFalse(shapedRecipe.CheckRecipe(craftingField));
 
 			craftingField.Remove(1);
-			var testItem = new UnitTestItem(16);
+			var testItem = new UnitTestItem();
 			craftingField.Add(1, new ItemStack(testItem));
 
 			Assert.IsFalse(shapedRecipe.CheckRecipe(craftingField));
@@ -90,8 +93,8 @@ namespace ItemFrameworkTest
 		[TestMethod]
 		public void CorrectShapedDifferentPlacementTest()
 		{
-			var stone = new TestItemStone();
-			var stick = new TestItemStick();
+			var stick = FrameworkRegistry.GetItem("Stick");
+			var stone = FrameworkRegistry.GetItem("Stone");
 
 			var shapedRecipe = new ShapedTestingRecipe();
 
@@ -111,8 +114,8 @@ namespace ItemFrameworkTest
 		[TestMethod]
 		public void IncorrectInputItemsTest()
 		{
-			var stone = new TestItemStone();
-			var stick = new TestItemStick();
+			var stick = FrameworkRegistry.GetItem("Stick");
+			var stone = FrameworkRegistry.GetItem("Stone");
 
 			var shapedRecipe = new ShapedTestingRecipe();
 
@@ -132,8 +135,8 @@ namespace ItemFrameworkTest
 		[TestMethod]
 		public void IncorrectShapedRecipeAmountsTest()
 		{
-			var stone = new TestItemStone();
-			var stick = new TestItemStick();
+			var stick = FrameworkRegistry.GetItem("Stick");
+			var stone = FrameworkRegistry.GetItem("Stone");
 
 			var shapedRecipe = new ShapedTestingRecipe();
 
@@ -144,69 +147,5 @@ namespace ItemFrameworkTest
 
 			Assert.IsFalse(shapedRecipe.CheckRecipe(craftingField));
 		}
-
-		#region auxiliary classes
-		/// <summary>
-		/// A temporary class that derives from the Shaped Crafting Recipe
-		/// This is used as a recipe for all the tests above.
-		/// </summary>
-		class ShapedTestingRecipe : ShapedCraftingRecipe
-		{
-			public ShapedTestingRecipe() : base()
-			{
-				RecipeIngredients = new ItemStack[]
-				{
-					new ItemStack(new TestItemStone(), 1, true, true),
-					new ItemStack(new TestItemStick(), 1, true, true),
-					new ItemStack(new TestItemStick(), 12, true, true)
-				};
-				width = 1;
-				Output = new[]
-				{
-					new ItemStack()
-					{
-						Item = new TestItemSpade(),
-						Amount = 1
-					}
-				};
-			}
-		}
-		
-		/// <summary>
-		/// The stone test item	used in all recipes above
-		/// </summary>
-		class TestItemStone : Item
-		{
-			public TestItemStone()
-			{
-				Name = "Stone";
-				StackSize = 64;
-			}
-		}
-
-		/// <summary>
-		/// The stick test item used in all recipes above
-		/// </summary>
-		class TestItemStick : Item
-		{
-			public TestItemStick()
-			{
-				Name = "Stick";
-				StackSize = 64;
-			}
-		}
-
-		/// <summary>
-		/// A spade test item which is set as the recipe output
-		/// </summary>
-		class TestItemSpade : Item
-		{
-			public TestItemSpade()
-			{
-				Name = "Spade";
-				StackSize = 64;
-			}
-		}
-		#endregion
 	}
 }
