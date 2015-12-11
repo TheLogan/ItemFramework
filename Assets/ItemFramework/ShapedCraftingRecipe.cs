@@ -15,7 +15,7 @@ namespace ItemFramework
 		/// <summary>
 		/// Checks the recipe shape against the layout in the crafting layout
 		/// </summary>
-		/// <param name="input"></param>
+		/// <param name="input">The crafting grid to check against</param>
 		/// <returns></returns>
 		public override bool CheckRecipe(Container input)
 		{
