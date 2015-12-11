@@ -5,6 +5,9 @@ using Newtonsoft.Json.Utilities;
 
 namespace ItemFramework
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public abstract class ShapedCraftingRecipe : CraftingRecipe
 	{
 		public int width;
@@ -16,31 +19,46 @@ namespace ItemFramework
 		/// <returns></returns>
 		public override bool CheckRecipe(Container input)
 		{
+			//If the recipe is wider than the crafting field, it will fail
 			if (input.Width < width) return false;
+
+			//If the amount of item stacks on the recipe and the crafting list aren't the same the recipe will fail.
 			if (input.GetAllItemStacks().Length != RecipeIngredients.Count(x => x != null)) return false;
 
+			//Setup a shortcut as we use it a lot
 			var inputStacks = input.ItemStacks;
 
+			// Get the first item in the recipe, and the first item in the crafting window, this makes it easier to match them up against each other.
 			int inputFirstItemIndex = inputStacks.IndexOf(x => x != null);
 			int recipeFirstItemIndex = RecipeIngredients.IndexOf(x => x != null);
 
+			// Match the recipe indexes to the crafters indexes
 			int inputCurrentPosition = inputFirstItemIndex - recipeFirstItemIndex;
-
+			
+			// gets the start column and end column of the recipe in comparison to the crafting grid
 			int inputColumnStartIndex = inputCurrentPosition % input.Width;
 			int inputColumnEndIndex = inputColumnStartIndex + width - 1;
-
+			
+			// ensure the recipe doesn't extend outside the crafting grid.
 			if (inputColumnEndIndex >= input.Width) return false;
 
+			// Loop through the ingredients
 			for (int i = 0, j = RecipeIngredients.Length; i < j; i++)
 			{
+				// ensure the current recipe position is not beyond the length of the crafting grid
 				if (inputCurrentPosition >= inputStacks.Length) return false;
-				var ingredient = RecipeIngredients[i];
 
+				//The current ingredient
+				var ingredient = RecipeIngredients[i];
+				
+				// If the ingredient is null and the ItemStack at the current position in the input isn't, or vice versa the recipe will fail
 				if ((ingredient != null && inputStacks[inputCurrentPosition] == null) ||
 					(ingredient == null && inputStacks[inputCurrentPosition] != null))
 				{
 					return false;
 				}
+
+				//If the item type doesn't match or there isn't enough items on the current position the recipe will fail
 				if (ingredient != null && inputStacks[inputCurrentPosition] != null)
 				{
 					if (ingredient.Item.GetType() != inputStacks[inputCurrentPosition].Item.GetType())
@@ -53,76 +71,16 @@ namespace ItemFramework
 					}
 				}
 
+				// If we are at the edge of the recipe jump to the next row of the recipe
 				if (inputCurrentPosition % input.Width == inputColumnEndIndex)
 				{
 					inputCurrentPosition += input.Width - width;
 				}
-
+				
 				inputCurrentPosition++;
 			}
 
 			return true;
-
-			/*////////////////////////////////////////////////*/
-
-
-
-
-			/*var crafterWidth = input.Width;
-
-			var recipeHeight = Mathf.RoundToInt(RecipeIngredients.Length / width);
-			var crafterHeight = Mathf.RoundToInt(input.ItemStacks.Length / crafterWidth);
-
-			for (int y = 0; y <= crafterHeight - recipeHeight; y++)
-			{
-				for (int x = 0; x <= crafterWidth - width; x++)
-				{
-					var crafterItemIndex = y * crafterWidth + x;
-
-					var itemIndexes = new List<int>();
-					bool viable = true;
-					for (int y2 = 0; y2 < recipeHeight; y2++)
-					{
-						for (int x2 = 0; x2 < width; x2++)
-						{
-							var recipeIndex = width * y2 + x2;
-							var tempCraftIndex = (y + y2) * input.Width + x + x2;
-
-							if (RecipeIngredients[recipeIndex] != null && input.ItemStacks[tempCraftIndex] != null)
-							{
-								if (RecipeIngredients[recipeIndex].GetType() != input.ItemStacks[tempCraftIndex].GetType() ||
-									RecipeIngredients[recipeIndex].Amount > input.ItemStacks[tempCraftIndex].Amount)
-								{
-									viable = false;
-								}
-								else
-								{
-									itemIndexes.Add(tempCraftIndex);
-								}
-							}
-
-						}
-					}
-					if (viable)
-					{
-						for (int i = 0; i < input.ItemStacks.Length; i++)
-						{
-							if (!itemIndexes.Contains(i) && input.ItemStacks[i] != null)
-							{
-								viable = false;
-								return false;
-							}
-						}
-						return true;
-					}
-				}
-			}
-
-
-
-			var inputStacks = input.ItemStacks;
-			return !RecipeIngredients.Where((t, i) => t.Item.GetType() != inputStacks[i].GetType() ||
-			t.Amount > inputStacks[i].Amount).Any();*/
 		}
 	}
 }

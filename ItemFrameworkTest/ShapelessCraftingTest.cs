@@ -7,12 +7,19 @@ namespace ItemFrameworkTest
 	[TestClass]
 	public class ShapelessCraftingTest
 	{
+		/// <summary>
+		/// Set up the database for use in the TestMethods
+		/// </summary>
 		[TestInitialize]
 		public void Init()
 		{
 			DbManager.Instance.Handler = new DbFileHandler("unittest.json");
 		}
 
+		
+		/// <summary>
+		/// This recipe should work, it has the correct amount of stacks and the correct amount of items
+		/// </summary>
 		[TestMethod]
 		public void CorrectShapelessRecipeTest()
 		{
@@ -33,6 +40,10 @@ namespace ItemFrameworkTest
 			Assert.IsTrue(recipe.CheckRecipe(craftingField));
 		}
 
+		/// <summary>
+		/// This recipe should fail, it has the correct types of items in the correct amounts of stacks, 
+		/// however it has the incorrect amounts of items in those stacks
+		/// </summary>
 		[TestMethod]
 		public void IncorrectShapelessAmount()
 		{
@@ -53,6 +64,10 @@ namespace ItemFrameworkTest
 			Assert.IsFalse(recipe.CheckRecipe(craftingField));
 		}
 
+		/// <summary>
+		/// This recipe should fail, it has more than enough items,
+		/// However there are too few stacks, if the stacks were split up it would work however, but they aren't
+		/// </summary>
 		[TestMethod]
 		public void IncorrectShapelessInputTest()
 		{
@@ -71,12 +86,16 @@ namespace ItemFrameworkTest
 			Assert.IsFalse(recipe.CheckRecipe(craftingField));
 		}
 
+		/// <summary>
+		/// This recipe should fail, it has the right amount of stacks with enough of each item,
+		/// However, one stack is of the wrong type
+		/// </summary>
 		[TestMethod]
 		public void IncorrectShapelessStacksTest()
 		{
 			var stick = new TestItemStick();
 			var stone = new TestItemStone();
-
+			
 			var stoneStack = new ItemStack(stone, 30, false, true);
 			var stickStack = new ItemStack(stick, 30, false, true);
 			var stickStack2 = new ItemStack(stick, 30, false, true);
@@ -94,6 +113,9 @@ namespace ItemFrameworkTest
 
 		#region auxiliary classes
 
+		/// <summary>
+		/// This is the recipe class used for testing, it's derived from the base CraftingRecipe class
+		/// </summary>
 		class TestSpadeRecipe : CraftingRecipe
 		{
 			public TestSpadeRecipe() : base()
@@ -107,12 +129,14 @@ namespace ItemFrameworkTest
 				
 				Output = new ItemStack[1]
 				{
-					new ItemStack(new ItemBronzeIngot(), true, true)
+					new ItemStack(new TestItemSpade(), true, true)
 				};
 			}
 		}
 
-		
+		/// <summary>
+		/// Test stick item used in the recipe
+		/// </summary>
 		class TestItemStick : Item
 		{
 			public TestItemStick()
@@ -122,6 +146,9 @@ namespace ItemFrameworkTest
 			}
 		}
 
+		/// <summary>
+		/// Test stone item used in the recipe
+		/// </summary>
 		class TestItemStone : Item
 		{
 			public TestItemStone()
@@ -131,6 +158,9 @@ namespace ItemFrameworkTest
 			}
 		}
 
+		/// <summary>
+		/// Test spade item used as recipe output
+		/// </summary>
 		class TestItemSpade : Item
 		{
 			public TestItemSpade()

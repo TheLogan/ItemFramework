@@ -18,6 +18,9 @@ namespace ItemFrameworkTest
 		}
 
 
+		/// <summary>
+		/// This recipe should just work
+		/// </summary>
 		[TestMethod]
 		public void CorrectShapedRecipeTest()
 		{
@@ -34,6 +37,9 @@ namespace ItemFrameworkTest
 			Assert.IsTrue(shapedRecipe.CheckRecipe(craftingField));
 		}
 
+		/// <summary>
+		/// This recipe should work, but is placed in a different position in the crafting grid
+		/// </summary>
 		[TestMethod]
 		public void CorrectShapedRecipeDifferentPlacementTest()
 		{
@@ -50,6 +56,10 @@ namespace ItemFrameworkTest
 			Assert.IsTrue(shapedRecipe.CheckRecipe(craftingField));
 		}
 
+		/// <summary>
+		/// This recipe should fail, it has some items in the correct places, 
+		/// however it has an extra itemstack placed in a 4th position, the recipe only takes 3 ingredients
+		/// </summary>
 		[TestMethod]
 		public void IncorrectInputItemsPlacementTest()
 		{
@@ -73,6 +83,31 @@ namespace ItemFrameworkTest
 			Assert.IsFalse(shapedRecipe.CheckRecipe(craftingField));
 		}
 
+		/// <summary>
+		/// This recipe should fail, it has the correct amount of items, 
+		/// however one stack is of the wrong type.
+		/// </summary>
+		[TestMethod]
+		public void CorrectShapedDifferentPlacementTest()
+		{
+			var stone = new TestItemStone();
+			var stick = new TestItemStick();
+
+			var shapedRecipe = new ShapedTestingRecipe();
+
+			var craftingField = new Container(16) { Width = 4 };
+			craftingField.Add(1, new ItemStack(stone));
+			craftingField.Add(5, new ItemStack(stone));
+			craftingField.Add(9, new ItemStack(stick, 12));
+
+			Assert.IsFalse(shapedRecipe.CheckRecipe(craftingField));
+		}
+
+
+		/// <summary>
+		/// This recipe should fail, it has the correct amount of items in the correct amount of stacks, 
+		/// however one stack is placed in the wrong position
+		/// </summary>
 		[TestMethod]
 		public void IncorrectInputItemsTest()
 		{
@@ -89,6 +124,11 @@ namespace ItemFrameworkTest
 			Assert.IsFalse(shapedRecipe.CheckRecipe(craftingField));
 		}
 
+
+		/// <summary>
+		/// This recipe should fail, it has the correct amount of stacks, it has the correct types in the correct positions, 
+		/// however it's lacking the correct amount of items in one stack.
+		/// </summary>
 		[TestMethod]
 		public void IncorrectShapedRecipeAmountsTest()
 		{
@@ -106,7 +146,10 @@ namespace ItemFrameworkTest
 		}
 
 		#region auxiliary classes
-
+		/// <summary>
+		/// A temporary class that derives from the Shaped Crafting Recipe
+		/// This is used as a recipe for all the tests above.
+		/// </summary>
 		class ShapedTestingRecipe : ShapedCraftingRecipe
 		{
 			public ShapedTestingRecipe() : base()
@@ -118,7 +161,7 @@ namespace ItemFrameworkTest
 					new ItemStack(new TestItemStick(), 12, true, true)
 				};
 				width = 1;
-				Output = new ItemStack[]
+				Output = new[]
 				{
 					new ItemStack()
 					{
@@ -127,9 +170,11 @@ namespace ItemFrameworkTest
 					}
 				};
 			}
-
 		}
-
+		
+		/// <summary>
+		/// The stone test item	used in all recipes above
+		/// </summary>
 		class TestItemStone : Item
 		{
 			public TestItemStone()
@@ -139,6 +184,9 @@ namespace ItemFrameworkTest
 			}
 		}
 
+		/// <summary>
+		/// The stick test item used in all recipes above
+		/// </summary>
 		class TestItemStick : Item
 		{
 			public TestItemStick()
@@ -148,6 +196,9 @@ namespace ItemFrameworkTest
 			}
 		}
 
+		/// <summary>
+		/// A spade test item which is set as the recipe output
+		/// </summary>
 		class TestItemSpade : Item
 		{
 			public TestItemSpade()
