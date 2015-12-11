@@ -3,6 +3,9 @@ using System;
 
 namespace ItemFramework.Db
 {
+	/// <summary>
+	/// Attribute to define the object's name in Db
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false)]
 	public class DbObjectAttribute : Attribute
 	{

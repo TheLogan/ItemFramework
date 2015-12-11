@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using UnityEngine;
 using Guid = System.Guid;
 using InvalidOperationException = System.InvalidOperationException;
-using NotImplementedException = System.NotImplementedException;
-using String = System.String;
-using System;
 
 namespace ItemFramework.Db
 {
+	/// <summary>
+	/// DbHandler for databases saved as JSON file
+	/// </summary>
 	public class DbFileHandler : IDbHandler
 	{
+		/// <summary>
+		/// Container for all data
+		/// </summary>
 		[DbObject("data")]
 		private class DataContainer
 		{
@@ -24,12 +26,21 @@ namespace ItemFramework.Db
 
 			public DataContainer() { }
 
+			/// <summary>
+			/// Add Container to DataContainer
+			/// </summary>
+			/// <param name="container">Container to be added</param>
 			public void AddContainer(Container container)
 			{
 				Containers.Add(container);
+				// Add the Container's content
 				AddItemStacks(container.Items);
 			}
 
+			/// <summary>
+			/// Add ItemStacks to DataContainer
+			/// </summary>
+			/// <param name="itemStacks">ItemStacks to be added</param>
 			public void AddItemStacks(params Guid?[] itemStacks)
 			{
 				foreach (Guid? itemStack in itemStacks)
@@ -41,6 +52,10 @@ namespace ItemFramework.Db
 				}
 			}
 
+			/// <summary>
+			/// Add ItemStacks to DataContainer
+			/// </summary>
+			/// <param name="itemStacks">ItemStacks to be added</param>
 			public void AddItemStacks(params ItemStack[] itemStacks)
 			{
 				foreach (ItemStack itemStack in itemStacks)
@@ -49,27 +64,46 @@ namespace ItemFramework.Db
 				}
 			}
 
-			internal void RemoveContainer(Container obj)
+			/// <summary>
+			/// Remove Container from DataContainer
+			/// </summary>
+			/// <param name="container">Container to be removed</param>
+			internal void RemoveContainer(Container container)
 			{
-				Containers.Remove(obj);
+				Containers.Remove(container);
 			}
 
-			internal void RemoveItemStack(ItemStack obj)
+			/// <summary>
+			/// Remove ItemStack from DataContainer
+			/// </summary>
+			/// <param name="itemStack">ItemStack to be removed</param>
+			internal void RemoveItemStack(ItemStack itemStack)
 			{
-				ItemStacks.Remove(obj);
+				ItemStacks.Remove(itemStack);
 			}
 		}
 
 		private static DataContainer dataContainer = new DataContainer();
 
+		/// <summary>
+		/// Path to file
+		/// </summary>
 		public string Path { get; private set; }
 
+		/// <summary>
+		/// Create new DbFileHandler and load data
+		/// </summary>
+		/// <param name="path">Path to file</param>
 		public DbFileHandler(string path)
 		{
 			Path = path;
 			Load();
 		}
 
+		/// <summary>
+		/// Create DbObject in database
+		/// </summary>
+		/// <param name="obj">DbObject to create</param>
 		public void Create(DbObject obj)
 		{
 			if (obj == null)
@@ -99,27 +133,35 @@ namespace ItemFramework.Db
 			Save();
 		}
 
+		/// <summary>
+		/// Load data from database
+		/// </summary>
 		private void Load()
 		{
 			using (FileStream fs = new FileStream(Path, FileMode.OpenOrCreate))
 			{
-				// Deserialize the data and read it from the instance.
+				// Read the file
 				byte[] bytes = new byte[fs.Length];
 				int numBytesToRead = (int)fs.Length;
 				int numBytesRead = 0;
+
 				while (numBytesToRead > 0)
 				{
-					// Read may return anything from 0 to numBytesToRead.
 					int n = fs.Read(bytes, numBytesRead, numBytesToRead);
 
-					// Break when the end of the file is reached.
+					// Break if file is read
 					if (n == 0)
+					{
 						break;
+					}
 
 					numBytesRead += n;
 					numBytesToRead -= n;
 				}
+
 				numBytesToRead = bytes.Length;
+
+				// Deserialize the data
 				DataContainer loadedData = JsonConvert.DeserializeObject<DataContainer>(
 					Encoding.UTF8.GetString(bytes),
 					new JsonSerializerSettings
@@ -127,6 +169,7 @@ namespace ItemFramework.Db
 						DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
 					});
 
+				// If the data couldn't be deserialized
 				if (loadedData == null)
 				{
 					return;
@@ -136,34 +179,49 @@ namespace ItemFramework.Db
 			}
 		}
 
+		/// <summary>
+		/// Load a specific object from the database
+		/// </summary>
+		/// <param name="id">Id of object</param>
+		/// <returns>Object if found; otherwise null</returns>
 		public object Load(Guid id)
 		{
+			// Look for object in Containers
 			Container c = dataContainer.Containers.FirstOrDefault(x => x.Id == id);
-
+			
+			// If object found, return
 			if (c != null)
 			{
 				return c;
 			}
 
+			// Look and return for object in ItemStack
 			return dataContainer.ItemStacks.FirstOrDefault(x => x.Id == id);
 		}
 
+		/// <summary>
+		/// Save the database to file
+		/// </summary>
 		public void Save()
 		{
 			using (FileStream fs = new FileStream(Path, FileMode.Create))
 			{
 				string t = JsonConvert.SerializeObject(
 					dataContainer,
-					Formatting.Indented,
 					new JsonSerializerSettings
 					{
 						DefaultValueHandling = DefaultValueHandling.Ignore
 					});
+
 				fs.Write(Encoding.UTF8.GetBytes(t), 0, Encoding.UTF8.GetByteCount(t));
 			}
 		}
 
-		public void Delete(DbObject obj)
+		/// <summary>
+		/// Remove object from database
+		/// </summary>
+		/// <param name="obj">DbObject to remove</param>
+		public void Remove(DbObject obj)
 		{
 			if (obj == null)
 			{

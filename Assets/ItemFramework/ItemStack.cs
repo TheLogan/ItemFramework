@@ -10,7 +10,7 @@ namespace ItemFramework
 	public delegate void ItemStackEmptyEvent(ItemStack itemStack);
 
 	[DbObject("itemstack")]
-	public class ItemStack : DbItemStack
+	public class ItemStack : DbObject
 	{
 		private static Dictionary<Guid, ItemStack> dict = new Dictionary<Guid, ItemStack>();
 		public override Guid Id
@@ -27,7 +27,7 @@ namespace ItemFramework
 					if (id != Guid.Empty)
 					{
 						dict.Remove(id);
-						DbManager.Instance.Handler.Delete(this);
+						DbManager.Instance.Handler.Remove(this);
 					}
 					if (dict.ContainsKey(value))
 					{
@@ -151,7 +151,7 @@ namespace ItemFramework
 						Empty.Invoke(this);
 					}
 
-					DbManager.Instance.Handler.Delete(this);
+					DbManager.Instance.Handler.Remove(this);
 
 					if (Id != Guid.Empty)
 					{
@@ -192,7 +192,7 @@ namespace ItemFramework
 						Empty.Invoke(this);
 					}
 
-					DbManager.Instance.Handler.Delete(this);
+					DbManager.Instance.Handler.Remove(this);
 
 					if (Id != Guid.Empty)
 					{
@@ -318,6 +318,23 @@ namespace ItemFramework
 		public override string ToString()
 		{
 			return "ItemStack[Id=" + Id + ",Item=" + Item.ToString() + ",Amount=" + Amount + "]";
+		}
+
+		/// <summary>
+		/// Load ItemStack with specific Id from Db
+		/// </summary>
+		/// <param name="id">Id of ItemStack</param>
+		/// <returns>ItemStack if found; otherwise null</returns>
+		public static ItemStack LoadFromDb(Guid id)
+		{
+			object obj = DbManager.Instance.Handler.Load(id);
+
+			if (obj is ItemStack)
+			{
+				return (ItemStack)obj;
+			}
+
+			return null;
 		}
 
 		public override int GetHashCode()

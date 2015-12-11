@@ -4,13 +4,25 @@ using InvalidOperationException = System.InvalidOperationException;
 
 namespace ItemFramework.Db
 {
+	/// <summary>
+	/// Object to be saved in Db
+	/// </summary>
 	public abstract class DbObject
 	{
+		/// <summary>
+		/// Database Id of object
+		/// </summary>
 		[DbProperty("id")]
-		public Guid id;
+		public Guid id { get; protected set; }
 
+		/// <summary>
+		/// Database Id of object
+		/// </summary>
 		public abstract Guid Id { get; internal set; }
 
+		/// <summary>
+		/// Whether the object is in the Db
+		/// </summary>
 		public bool IsInDb
 		{
 			get
@@ -19,6 +31,10 @@ namespace ItemFramework.Db
 			}
 		}
 
+		/// <summary>
+		/// Load this object from Db
+		/// </summary>
+		/// <returns></returns>
 		public object LoadFromDb()
 		{
 			if (IsInDb)
@@ -28,6 +44,9 @@ namespace ItemFramework.Db
 			return null;
 		}
 
+		/// <summary>
+		/// Save this object to Db
+		/// </summary>
 		public void SaveToDb()
 		{
 			var dataContract = GetType().GetCustomAttributes(typeof(DbObjectAttribute), true).FirstOrDefault();
@@ -47,11 +66,14 @@ namespace ItemFramework.Db
 			}
 		}
 
-		public void DeleteFromDb()
+		/// <summary>
+		/// Remove this object from Db
+		/// </summary>
+		public void RemoveFromDb()
 		{
 			if (IsInDb)
 			{
-				DbManager.Instance.Handler.Delete(this);
+				DbManager.Instance.Handler.Remove(this);
 			}
 		}
 	}

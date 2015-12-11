@@ -2,6 +2,9 @@
 
 namespace ItemFramework.Db
 {
+	/// <summary>
+	/// Attribute to define the name of the property in the Db
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
 	public class DbPropertyAttribute : Attribute
 	{

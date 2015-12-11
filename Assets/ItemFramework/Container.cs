@@ -24,7 +24,7 @@ namespace ItemFramework
 
 	[System.Serializable]
 	[DbObject("containers")]
-	public class Container : DbContainer
+	public class Container : DbObject
 	{
 		/// <summary>
 		/// Dictionary over Guid to Container
@@ -48,7 +48,7 @@ namespace ItemFramework
 					if (id != Guid.Empty)
 					{
 						dict.Remove(id);
-						DbManager.Instance.Handler.Delete(this);
+						DbManager.Instance.Handler.Remove(this);
 					}
 					if (dict.ContainsKey(value))
 					{
@@ -558,6 +558,23 @@ namespace ItemFramework
 				}
 			}
 			return itemStacks.ToArray();
+		}
+
+		/// <summary>
+		/// Load Container with specific Id from Db
+		/// </summary>
+		/// <param name="id">Id of Container</param>
+		/// <returns>Container if found; otherwise null</returns>
+		public static Container LoadFromDb(Guid id)
+		{
+			object obj = DbManager.Instance.Handler.Load(id);
+
+			if (obj is Container)
+			{
+				return (Container)obj;
+			}
+
+			return null;
 		}
 
 		/// <summary>
