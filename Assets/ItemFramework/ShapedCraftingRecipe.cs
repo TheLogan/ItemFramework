@@ -24,32 +24,41 @@ namespace ItemFramework
 			int inputFirstItemIndex = inputStacks.IndexOf(x => x != null);
 			int recipeFirstItemIndex = RecipeIngredients.IndexOf(x => x != null);
 
-			int inputStartIndex = inputFirstItemIndex - recipeFirstItemIndex;
-			int inputColumnIndex = inputStartIndex % input.Width;
+			int inputCurrentPosition = inputFirstItemIndex - recipeFirstItemIndex;
 
-			foreach (var ingredient in RecipeIngredients)
+			int inputColumnStartIndex = inputCurrentPosition % input.Width;
+			int inputColumnEndIndex = inputColumnStartIndex + width - 1;
+
+			if (inputColumnEndIndex >= input.Width) return false;
+
+			for (int i = 0, j = RecipeIngredients.Length; i < j; i++)
 			{
-				if ((ingredient != null && inputStacks[inputStartIndex] == null) ||
-					(ingredient == null && inputStacks[inputStartIndex] != null))
+				if (inputCurrentPosition >= inputStacks.Length) return false;
+				var ingredient = RecipeIngredients[i];
+
+				if ((ingredient != null && inputStacks[inputCurrentPosition] == null) ||
+					(ingredient == null && inputStacks[inputCurrentPosition] != null))
 				{
 					return false;
 				}
-				if (ingredient != null && inputStacks[inputStartIndex] != null)
+				if (ingredient != null && inputStacks[inputCurrentPosition] != null)
 				{
-					if (ingredient.Item.GetType() != inputStacks[inputStartIndex].Item.GetType())
+					if (ingredient.Item.GetType() != inputStacks[inputCurrentPosition].Item.GetType())
 					{
 						return false;
 					}
-					if (ingredient.Amount > inputStacks[inputStartIndex].Amount)
+					if (ingredient.Amount > inputStacks[inputCurrentPosition].Amount)
 					{
 						return false;
 					}
 				}
-				inputStartIndex++;
-				if (inputStartIndex%input.Width == 0)
+
+				if (inputCurrentPosition % input.Width == inputColumnEndIndex)
 				{
-					inputStartIndex += inputColumnIndex;
+					inputCurrentPosition += input.Width - width;
 				}
+
+				inputCurrentPosition++;
 			}
 
 			return true;
