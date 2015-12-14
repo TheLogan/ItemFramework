@@ -1,7 +1,6 @@
 ﻿using ItemFramework;
 using ItemFramework.Db;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using UnityEngine;
 
 namespace ItemFrameworkTest
 {
@@ -20,6 +19,11 @@ namespace ItemFrameworkTest
 			DbManager.Instance.Handler = new DbFileHandler("unittest.json");
 		}
 
+		[TestCleanup]
+		public void CleanUp()
+		{
+			DbManager.Instance.Handler.Clear();
+		}
 
 		/// <summary>
 		/// This recipe should just work

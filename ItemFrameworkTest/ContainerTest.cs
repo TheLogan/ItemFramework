@@ -16,10 +16,23 @@ namespace ItemFrameworkTest
 			DbManager.Instance.Handler = new DbFileHandler("unittest.json");
 		}
 
+		[TestCleanup]
+		public void CleanUp()
+		{
+			DbManager.Instance.Handler.Clear();
+		}
+
 		[TestMethod]
 		public void ItemContainerAdditionTest()
 		{
-			int q1 = (int)(Common.ItemStackSize * 0.8), q2 = (int)(Common.ItemStackSize * 0.6), q3 = (int)(Common.ItemStackSize * 0.4);
+			float p1 = 0.8f;
+			float p2 = 0.6f;
+			float p3 = (p1 + p2) % 1;
+
+			int q1 = (int)(Common.ItemStackSize * p1);
+			int q2 = (int)(Common.ItemStackSize * p2);
+			int q3 = (int)(Common.ItemStackSize * p3);
+
 			ItemStack i1 = common.GetItemStack(q1);
 			ItemStack i2 = common.GetItemStack(q2);
 			Container container = new Container(3);
@@ -33,7 +46,14 @@ namespace ItemFrameworkTest
 		[TestMethod]
 		public void ItemContainerSubtractionTest()
 		{
-			int q1 = (int)(Common.ItemStackSize * 0.8), q2 = (int)(Common.ItemStackSize * 0.6), q3 = (int)(Common.ItemStackSize * 0.4);
+			float p1 = 0.8f;
+			float p2 = 0.6f;
+			float p3 = (p1 + p2) % 1;
+
+			int q1 = (int)(Common.ItemStackSize * p1);
+			int q2 = (int)(Common.ItemStackSize * p2);
+			int q3 = (int)(Common.ItemStackSize * p3);
+
 			ItemStack i1 = common.GetItemStack(q1);
 			ItemStack i2 = common.GetItemStack(q2);
 			ItemStack i3 = common.GetItemStack(q3);

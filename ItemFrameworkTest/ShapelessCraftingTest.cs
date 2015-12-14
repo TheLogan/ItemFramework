@@ -19,6 +19,11 @@ namespace ItemFrameworkTest
 			DbManager.Instance.Handler = new DbFileHandler("unittest.json");
 		}
 
+		[TestCleanup]
+		public void CleanUp()
+		{
+			DbManager.Instance.Handler.Clear();
+		}
 		
 		/// <summary>
 		/// This recipe should work, it has the correct amount of stacks and the correct amount of items
@@ -37,8 +42,8 @@ namespace ItemFrameworkTest
 			
 			var craftingField = new Container(16) { Width = 4 };
 			craftingField.Add(0, stoneStack);
-			craftingField.Add(1, stickStack);
-			craftingField.Add(2, stoneStack2);
+			craftingField.Add(4, stoneStack2);
+			craftingField.Add(12, stickStack);
 
 			Assert.IsTrue(recipe.CheckRecipe(craftingField));
 		}
@@ -61,8 +66,8 @@ namespace ItemFrameworkTest
 
 			var craftingField = new Container(16) { Width = 4 };
 			craftingField.Add(0, stoneStack);
-			craftingField.Add(1, stickStack);
-			craftingField.Add(2, stoneStack2);
+			craftingField.Add(4, stickStack);
+			craftingField.Add(12, stoneStack2);
 
 			Assert.IsFalse(recipe.CheckRecipe(craftingField));
 		}

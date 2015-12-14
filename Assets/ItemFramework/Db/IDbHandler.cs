@@ -24,5 +24,9 @@ namespace ItemFramework.Db
 		/// </summary>
 		/// <param name="obj">The object</param>
 		void Remove(DbObject obj);
+		/// <summary>
+		/// Remove all objects from Db
+		/// </summary>
+		void Clear();
 	}
 }

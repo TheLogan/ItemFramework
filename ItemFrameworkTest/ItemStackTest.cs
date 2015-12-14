@@ -19,6 +19,12 @@ namespace ItemFrameworkTest
 			DbManager.Instance.Handler = new DbFileHandler("unittest.json");
 		}
 
+		[TestCleanup]
+		public void CleanUp()
+		{
+			DbManager.Instance.Handler.Clear();
+		}
+
 		[TestMethod]
 		public void ItemStackTypeTest()
 		{

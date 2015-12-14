@@ -247,5 +247,14 @@ namespace ItemFramework.Db
 
 			Save();
 		}
+
+		/// <summary>
+		/// Remove all objects from database
+		/// </summary>
+		public void Clear()
+		{
+			dataContainer = new DataContainer();
+			Save();
+		}
 	}
 }
