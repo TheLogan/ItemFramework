@@ -1,13 +1,12 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ItemFramework
 {
-	public class CraftingManager : MonoBehaviour
+	public class CraftingManager
 	{
-		public List<CraftingRecipe> Recipes = new List<CraftingRecipe>();
-
 		private static CraftingManager instance;
+
+		public List<CraftingRecipe> Recipes = new List<CraftingRecipe>();
 
 		public static CraftingManager Instance
 		{
@@ -15,14 +14,13 @@ namespace ItemFramework
 			{
 				if (instance == null)
 				{
-					var go = new GameObject("CraftingManager");
-					instance = go.AddComponent<CraftingManager>();
+					instance = new CraftingManager();
 				}
 				return instance;
 			}
 		}
 
-		private CraftingManager() {}
+		private CraftingManager() { }
 
 		public void Register(CraftingRecipe recipe)
 		{
