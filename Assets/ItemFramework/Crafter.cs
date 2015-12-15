@@ -105,14 +105,8 @@ namespace ItemFramework
 			}
 
 			var recipes = GetRecipes();
-			var selectedRecipes = recipes.Where(recipe => recipe.CheckRecipe(container)).ToList();
 
-			if (selectedRecipes.Count == 0)
-				return null;
-
-			var firstRecipe = selectedRecipes.FirstOrDefault();
-
-			return firstRecipe;
+			return recipes.FirstOrDefault(recipe => recipe.CheckRecipe(container));
 		}
 	}
 }

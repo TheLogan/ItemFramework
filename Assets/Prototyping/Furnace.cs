@@ -17,7 +17,9 @@ public class Furnace : Crafter
 		fuel = new Container(1);
 		input.Validator += OnInputValidate;
 		input.Changed += OnInputChanged;
+
 		fuel.Validator += OnFuelValidate;
+
 		fuel.Changed += OnFuelChanged;
 	}
 
