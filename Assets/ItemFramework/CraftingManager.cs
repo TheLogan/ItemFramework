@@ -22,10 +22,7 @@ namespace ItemFramework
 			}
 		}
 
-		private CraftingManager()
-		{
-			Register(new RecipeBronzeIngot());
-		}
+		private CraftingManager() {}
 
 		public void Register(CraftingRecipe recipe)
 		{
