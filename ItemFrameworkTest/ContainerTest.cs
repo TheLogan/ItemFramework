@@ -65,5 +65,38 @@ namespace ItemFrameworkTest
 			Assert.AreEqual(q3, container.Get(1).Amount);
 			Assert.AreEqual(Common.ItemStackSize, container.Count(common.GetItem().GetType()));
 		}
+
+		[TestMethod]
+		public void ItemContainerEmptyTest()
+		{
+			ItemStack i1 = new ItemStack(FrameworkRegistry.GetItem("Spade"), false, true);
+			Container container = new Container(1);
+			Assert.AreEqual(1, container.Items.Length);
+			
+			container.Add(i1);
+
+			Assert.AreNotEqual(null, container.Get(0));
+
+            container.Get(0).Amount = 0;
+
+			Assert.AreEqual(null, container.Get(0));
+		}
+
+		[TestMethod]
+		public void ItemContainerValidatorTest()
+		{
+			ItemStack i1 = new ItemStack(FrameworkRegistry.GetItem("Spade"), false, true);
+			Container container = new Container(1);
+			Assert.AreEqual(1, container.Items.Length);
+
+			container.Validator += (ItemStack itemStack, System.ComponentModel.CancelEventArgs args) =>
+			{
+				args.Cancel = true;
+			};
+
+			container.Add(i1);
+
+			Assert.AreEqual(null, container.Get(0));
+		}
 	}
 }

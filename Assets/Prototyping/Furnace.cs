@@ -23,6 +23,7 @@ public class Furnace : Crafter
 
 	private void OnInputValidate(ItemStack itemStack, CancelEventArgs args)
 	{
+		// If the Item do not inherit the abstract ItemOre class, cancel
 		if (!(itemStack.Item is ItemOre))
 		{
 			args.Cancel = true;
@@ -31,6 +32,7 @@ public class Furnace : Crafter
 
 	private void OnFuelValidate(ItemStack itemStack, CancelEventArgs args)
 	{
+		// If the Item do not implement the IBurnable interface, cancel
 		if (!(itemStack.Item is IBurnable))
 		{
 			args.Cancel = true;
