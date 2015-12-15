@@ -14,9 +14,9 @@ namespace ItemFrameworkTest
 			return FrameworkRegistry.GetItem(ItemName);
 		}
 
-		public ItemStack GetItemStack(int amount)
+		public ItemStack GetItemStack(int amount, bool temp = true)
 		{
-			return new ItemStack(GetItem(), amount, false, true);
+			return new ItemStack(GetItem(), amount, false, temp);
 		}
 
 		public Dictionary<string, Type> RegisterItems()

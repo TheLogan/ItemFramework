@@ -9,15 +9,10 @@ namespace ItemFramework.Db
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false)]
 	public class DbObjectAttribute : Attribute
 	{
+		// Tell the JSON.NET library that properties and fields in the class must have a property attribute.
+		public readonly MemberSerialization MemberSerialization = MemberSerialization.OptIn;
+
 		public string Name;
-
-		private MemberSerialization _memberSerialization = MemberSerialization.OptIn;
-
-		public MemberSerialization MemberSerialization
-		{
-			get { return _memberSerialization; }
-			set { _memberSerialization = value; }
-		}
 
 		public DbObjectAttribute(string name)
 		{
