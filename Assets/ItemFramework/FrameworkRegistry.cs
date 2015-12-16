@@ -72,7 +72,7 @@ namespace ItemFramework
 		{
 			if (recipes == null) return;
 			foreach (Type recipe in recipes) {
-				if (typeof(Item).IsAssignableFrom(recipe))
+				if (typeof(CraftingRecipe).IsAssignableFrom(recipe))
 				{
 					CraftingManager.Instance.Register((CraftingRecipe)Activator.CreateInstance(recipe));
 				}

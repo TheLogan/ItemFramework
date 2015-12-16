@@ -3,7 +3,7 @@ using ItemFramework;
 
 public class RecipeBronzeIngot : FurnaceRecipe
 {
-	public RecipeBronzeIngot() : base()
+	public RecipeBronzeIngot()
 	{
 		RecipeIngredients = new ItemStack[2]
 		{

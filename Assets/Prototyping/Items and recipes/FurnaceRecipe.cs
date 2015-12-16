@@ -8,4 +8,10 @@ public abstract class FurnaceRecipe : CraftingRecipe
 		get { return progressTime; }
 		protected set { progressTime = value; }
 	}
+
+	public override bool CheckRecipe(Container input)
+	{
+		// FIXME: Ignore number of stacks
+		return base.CheckRecipe(input);
+	}
 }
