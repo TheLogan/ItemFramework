@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.ComponentModel;
 using ItemFramework;
-using Debug = UnityEngine.Debug;
 using System.Collections;
 using UnityEngine;
 
@@ -23,7 +22,7 @@ public class Furnace : Crafter
 		fuel.Changed += OnFuelChanged;
 	}
 
-	private void OnInputValidate(ItemStack itemStack, CancelEventArgs args)
+	private void OnInputValidate(int index, ItemStack itemStack, CancelEventArgs args)
 	{
 		// If the Item do not inherit the abstract ItemOre class, cancel
 		if (!(itemStack.Item is ItemOre))
@@ -32,7 +31,7 @@ public class Furnace : Crafter
 		}
 	}
 
-	private void OnFuelValidate(ItemStack itemStack, CancelEventArgs args)
+	private void OnFuelValidate(int index, ItemStack itemStack, CancelEventArgs args)
 	{
 		// If the Item do not implement the IBurnable interface, cancel
 		if (!(itemStack.Item is IBurnable))
@@ -83,7 +82,6 @@ public class Furnace : Crafter
 
 	private void OnInputChanged()
 	{
-		//Debug.Log("Input changed => " + input.ToString());
 		TryCraft();
 	}
 

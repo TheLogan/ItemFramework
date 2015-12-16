@@ -118,13 +118,32 @@ namespace ItemFrameworkTest
 		}
 
 		[TestMethod]
-		public void ItemContainerValidatorTest()
+		public void ItemContainerValidatorPartlyDeniedTest()
+		{
+			ItemStack i1 = new ItemStack(FrameworkRegistry.GetItem("Spade"), false, true);
+			Container container = new Container(2);
+
+			container.Validator += (int index, ItemStack itemStack, System.ComponentModel.CancelEventArgs args) =>
+			{
+				if (index == 0)
+				{
+					args.Cancel = true;
+				}
+			};
+
+			container.Add(i1);
+
+			Assert.AreEqual(null, container.Get(0));
+			Assert.AreNotEqual(null, container.Get(1));
+		}
+
+		[TestMethod]
+		public void ItemContainerValidatorDeniedTest()
 		{
 			ItemStack i1 = new ItemStack(FrameworkRegistry.GetItem("Spade"), false, true);
 			Container container = new Container(1);
-			Assert.AreEqual(1, container.Items.Length);
 
-			container.Validator += (ItemStack itemStack, System.ComponentModel.CancelEventArgs args) =>
+			container.Validator += (int index, ItemStack itemStack, System.ComponentModel.CancelEventArgs args) =>
 			{
 				args.Cancel = true;
 			};

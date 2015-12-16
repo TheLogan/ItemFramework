@@ -18,9 +18,10 @@ namespace ItemFramework
 	/// <summary>
 	/// Event to validate incomming ItemStack to Container
 	/// </summary>
+	/// <param name="index">Slot index</param>
 	/// <param name="itemStack">The ItemStack to validate</param>
 	/// <param name="args">Cancelable event - Set "args.Cancel = true;" if ItemStack shouldn't be added</param>
-	public delegate void ContainerValidatorEvent(ItemStack itemStack, CancelEventArgs args);
+	public delegate void ContainerValidatorEvent(int index, ItemStack itemStack, CancelEventArgs args);
 
 	[System.Serializable]
 	[DbObject("containers")]
@@ -140,13 +141,14 @@ namespace ItemFramework
 		{
 			Slots = slots;
 			Width = width;
-			
+
 			ItemStack.Empty += onItemStackEmpty;
 
 			if (id == Guid.Empty)
 			{
 				SaveToDb();
-			} else
+			}
+			else
 			{
 				this.Id = id;
 			}
@@ -220,17 +222,6 @@ namespace ItemFramework
 			{
 				ItemStack stack = clonedStacks[i];
 
-				// Validate the ItemStack
-				if (Validator != null)
-				{
-					var eventArgs = new CancelEventArgs();
-					Validator(stack, eventArgs);
-					if (eventArgs.Cancel)
-					{
-						return false;
-					}
-				}
-
 				// First add to already existing stacks
 				for (int k = 0, l = Items.Length; k < l; k++)
 				{
@@ -264,6 +255,17 @@ namespace ItemFramework
 				{
 					if (!Items[k].HasValue)
 					{
+						// Validate the ItemStack
+						if (Validator != null)
+						{
+							var eventArgs = new CancelEventArgs();
+							Validator(k, stack, eventArgs);
+							if (eventArgs.Cancel)
+							{
+								continue;
+							}
+						}
+
 						if (stack.Amount > stack.Item.StackSize)
 						{
 							stack.Amount -= stack.Item.StackSize;
@@ -304,17 +306,6 @@ namespace ItemFramework
 			{
 				if (stack == null || stack.Item == null) continue;
 
-				// Validate the ItemStack
-				if (Validator != null)
-				{
-					var eventArgs = new CancelEventArgs();
-					Validator(stack, eventArgs);
-					if (eventArgs.Cancel)
-					{
-						continue;
-					}
-				}
-
 				// First add to already existing stacks
 				for (int i = 0; i < Items.Length; i++)
 				{
@@ -350,6 +341,17 @@ namespace ItemFramework
 				{
 					if (!Items[i].HasValue)
 					{
+						// Validate the ItemStack
+						if (Validator != null)
+						{
+							var eventArgs = new CancelEventArgs();
+							Validator(i, stack, eventArgs);
+							if (eventArgs.Cancel)
+							{
+								continue;
+							}
+						}
+
 						if (stack.Amount > stack.Item.StackSize)
 						{
 							Items[i] = new ItemStack(stack.Item, stack.Item.StackSize).Id;
