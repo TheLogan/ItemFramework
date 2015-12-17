@@ -23,8 +23,8 @@ public class GuiHandler : MonoBehaviour, IMod
 
 	public void AddItems()
 	{
-		FurnaceScript.input.Add(new ItemStack(FrameworkRegistry.GetItem("CopperOre"), 64));
-		FurnaceScript.input.Add(new ItemStack(FrameworkRegistry.GetItem("TinOre"), 16));
+		FurnaceScript.Crafter.input.Add(new ItemStack(FrameworkRegistry.GetItem("CopperOre"), 64));
+		FurnaceScript.Crafter.input.Add(new ItemStack(FrameworkRegistry.GetItem("TinOre"), 16));
 	}
 
 	public void AddFuel()
@@ -34,9 +34,9 @@ public class GuiHandler : MonoBehaviour, IMod
 
 	void Update()
 	{
-		TinText.text = "Tin Ore : " + FurnaceScript.input.Count(typeof(ItemTinOre)).ToString();
-		CopperText.text = "Copper Ore : " + FurnaceScript.input.Count(typeof(ItemCopperOre)).ToString();
-		BronzeText.text = "Bronze Ingot : " + FurnaceScript.output.Count(typeof(ItemBronzeIngot)).ToString();
+		TinText.text = "Tin Ore : " + FurnaceScript.Crafter.input.Count(typeof(ItemTinOre)).ToString();
+		CopperText.text = "Copper Ore : " + FurnaceScript.Crafter.input.Count(typeof(ItemCopperOre)).ToString();
+		BronzeText.text = "Bronze Ingot : " + FurnaceScript.Crafter.output.Count(typeof(ItemBronzeIngot)).ToString();
 		ItemStack fuelStack = FurnaceScript.fuel.Get(0);
 		FuelText.text = "Fuel : " + (fuelStack != null ? fuelStack.Amount : 0).ToString();
 		BurnProgressText.text = "Burn progress : " + Mathf.RoundToInt(FurnaceScript.BurnProgress * 100) + "%";

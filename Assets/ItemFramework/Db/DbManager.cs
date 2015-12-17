@@ -21,6 +21,10 @@
 		{
 			get
 			{
+				if (handler == null)
+				{
+					handler = new DbFileHandler("db.json");
+				}
 				return handler;
 			}
 			set

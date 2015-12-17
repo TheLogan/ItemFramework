@@ -1,9 +1,8 @@
-﻿using UnityEngine;
-using System.Linq;
+﻿using System.Linq;
 
 namespace ItemFramework
 {
-	public abstract class Crafter : MonoBehaviour
+	public abstract class Crafter
 	{
 		/// <summary>
 		/// Incoming Container of crafting ingredients
@@ -35,14 +34,7 @@ namespace ItemFramework
 		{
 			if (!simulate)
 			{
-				ItemStack[] ingredients = new ItemStack[recipe.RecipeIngredients.Length];
-
-				for (int i = 0, j = ingredients.Length; i < j; i++)
-				{
-					ingredients[i] = recipe.RecipeIngredients[i].Clone(true);
-				}
-
-				container.Remove(ingredients);
+				container.Remove(ItemStack.CloneMultiple(true, recipe.RecipeIngredients));
 			}
 
 			return recipe.Output;
@@ -108,5 +100,7 @@ namespace ItemFramework
 
 			return recipes.FirstOrDefault(recipe => recipe.CheckRecipe(container));
 		}
+
+		
 	}
 }

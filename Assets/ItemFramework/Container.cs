@@ -90,8 +90,9 @@ namespace ItemFramework
 			get
 			{
 				List<ItemStack> itemStacks = new List<ItemStack>();
-				foreach (var item in Items)
+				for (int i = 0, j = Items.Length; i < j; i++)
 				{
+					var item = Items[i];
 					itemStacks.Add(item.HasValue ? ItemStack.GetById(item.Value) : null);
 				}
 				return itemStacks.ToArray();
@@ -302,12 +303,13 @@ namespace ItemFramework
 		{
 			List<ItemStack> clonedStacks = new List<ItemStack>(ItemStack.CloneMultiple(true, stacks));
 			bool containerChanged = false;
-			foreach (ItemStack stack in clonedStacks)
+			for (int u = 0, j = clonedStacks.Count; u < j; u++)
 			{
+				ItemStack stack = clonedStacks[u];
 				if (stack == null || stack.Item == null) continue;
 
 				// First add to already existing stacks
-				for (int i = 0; i < Items.Length; i++)
+				for (int i = 0, l = Items.Length; i < l; i++)
 				{
 					if (Items[i].HasValue)
 					{
@@ -337,15 +339,15 @@ namespace ItemFramework
 				}
 
 				// Then find the first empty slot
-				for (int i = 0; i < Items.Length; i++)
+				for (int k = 0, l = Items.Length; k < l; k++)
 				{
-					if (!Items[i].HasValue)
+					if (!Items[k].HasValue)
 					{
 						// Validate the ItemStack
 						if (Validator != null)
 						{
 							var eventArgs = new CancelEventArgs();
-							Validator(i, stack, eventArgs);
+							Validator(k, stack, eventArgs);
 							if (eventArgs.Cancel)
 							{
 								continue;
@@ -354,12 +356,12 @@ namespace ItemFramework
 
 						if (stack.Amount > stack.Item.StackSize)
 						{
-							Items[i] = new ItemStack(stack.Item, stack.Item.StackSize).Id;
+							Items[k] = new ItemStack(stack.Item, stack.Item.StackSize).Id;
 							stack.Amount -= stack.Item.StackSize;
 						}
 						else
 						{
-							Items[i] = stack.GetPersistant().Id;
+							Items[k] = stack.GetPersistant().Id;
 							containerChanged = true;
 							stack.Amount = 0;
 							break;
@@ -469,15 +471,16 @@ namespace ItemFramework
 		{
 			bool containerChanged = false;
 			List<ItemStack> removedItemStacks = new List<ItemStack>();
-			foreach (ItemStack stack in stacks)
+			for (int i = 0, j = stacks.Length; i < j; i++)
 			{
+				var stack = stacks[i];
 				if (stack.Amount <= 0) continue;
 
 				ItemStack removedItemStack = new ItemStack(stack.Item, 0);
 
-				for (var i = 0; i < Items.Length; i++)
+				for (int k = 0, l = Items.Length; k < l; k++)
 				{
-					var tempStack = Get(i);
+					var tempStack = Get(k);
 					if (tempStack != null && tempStack.Item.GetType() == stack.Item.GetType())
 					{
 						int amountToRemove = Mathf.Min(tempStack.Amount, stack.Amount);
@@ -487,7 +490,7 @@ namespace ItemFramework
 						containerChanged = true;
 						if (tempStack.Amount == 0)
 						{
-							Items[i] = null;
+							Items[k] = null;
 						}
 						if (stack.Amount == 0)
 						{
@@ -552,8 +555,9 @@ namespace ItemFramework
 		public ItemStack[] GetAllItemStacks()
 		{
 			List<ItemStack> itemStacks = new List<ItemStack>();
-			foreach (var item in Items)
+			for (int i = 0, j = Items.Length; i < j; i++)
 			{
+				var item = Items[i];
 				if (item.HasValue)
 				{
 					itemStacks.Add(ItemStack.GetById(item.Value));

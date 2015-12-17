@@ -1,24 +1,21 @@
-﻿using System.Linq;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using ItemFramework;
 using System.Collections;
 using UnityEngine;
 
-public class Furnace : Crafter
+public class Furnace : CrafterComponent
 {
 	private const float TICK_TIME = 0.05f;
 	public Container fuel;
 
 	void Start()
 	{
-		input = new Container();
-		output = new Container(1);
+		Crafter = new FurnaceCrafter();
+		Crafter.input.Validator += OnInputValidate;
+		Crafter.input.Changed += OnInputChanged;
+
 		fuel = new Container(1);
-		input.Validator += OnInputValidate;
-		input.Changed += OnInputChanged;
-
 		fuel.Validator += OnFuelValidate;
-
 		fuel.Changed += OnFuelChanged;
 	}
 
@@ -46,22 +43,17 @@ public class Furnace : Crafter
 	public float BurnTime { get; private set; }
 	public float BurnProgress { get; private set; }
 
-	protected override CraftingRecipe[] GetRecipes()
-	{
-		return CraftingManager.Instance.Recipes.Where(x => x is FurnaceRecipe).ToArray();
-	}
-
 	private void TryCraft()
 	{
-		if (input.GetAllItemStacks().Length > 0)
+		if (Crafter.input.GetAllItemStacks().Length > 0)
 		{
 			if (BurnTime == 0)
 			{
 				ItemStack fuelStack = fuel.Get(0);
 				if (fuelStack != null && fuelStack.Amount > 0)
 				{
-					FurnaceRecipe recipe = (FurnaceRecipe)GetFirstRecipe(input);
-					if (recipe != null && output.CanAdd(recipe.Output))
+					FurnaceRecipe recipe = (FurnaceRecipe)Crafter.GetFirstRecipe();
+					if (recipe != null && Crafter.output.CanAdd(recipe.Output))
 					{
 						CurrentRecipe = recipe;
 						StartCoroutine("Burn", ((IBurnable)fuelStack.Item).BurnTime);
@@ -71,8 +63,8 @@ public class Furnace : Crafter
 			}
 			else if (CurrentRecipe == null)
 			{
-				FurnaceRecipe recipe = (FurnaceRecipe)GetFirstRecipe(input);
-				if (recipe != null && output.CanAdd(recipe.Output))
+				FurnaceRecipe recipe = (FurnaceRecipe)Crafter.GetFirstRecipe();
+				if (recipe != null && Crafter.output.CanAdd(recipe.Output))
 				{
 					CurrentRecipe = recipe;
 				}
@@ -102,16 +94,16 @@ public class Furnace : Crafter
 				this.ProgressTimeElapsed += TICK_TIME;
 				if (this.ProgressTimeElapsed >= this.CurrentRecipe.ProgressTime)
 				{
-					ItemStack[] result = CraftRecipe(input);
+					ItemStack[] result = Crafter.CraftRecipe();
 					if (result != null)
 					{
-						output.Add(result);
+						Crafter.output.Add(result);
 					}
 					this.ProgressTimeElapsed -= this.CurrentRecipe.ProgressTime;
 					this.CurrentRecipe = null;
 
-					FurnaceRecipe recipe = (FurnaceRecipe)GetFirstRecipe(input);
-					if (recipe != null && output.CanAdd(recipe.Output))
+					FurnaceRecipe recipe = (FurnaceRecipe)Crafter.GetFirstRecipe();
+					if (recipe != null && Crafter.output.CanAdd(recipe.Output))
 					{
 						CurrentRecipe = recipe;
 					}

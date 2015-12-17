@@ -61,9 +61,9 @@ namespace ItemFramework
 					{
 						throw new Exception("Item identifier is already in use by " + registryItems[e.Current.Key].ToString());
 					}
-					Item i = (Item)Activator.CreateInstance(e.Current.Value,true);
+					Item i = (Item)Activator.CreateInstance(e.Current.Value, true);
 					i.Identifier = e.Current.Key;
-                    registryItems.Add(e.Current.Key, i);
+					registryItems.Add(e.Current.Key, i);
 				}
 			}
 		}
@@ -71,10 +71,11 @@ namespace ItemFramework
 		private static void RegisterRecipes(Type[] recipes)
 		{
 			if (recipes == null) return;
-			foreach (Type recipe in recipes) {
-				if (typeof(CraftingRecipe).IsAssignableFrom(recipe))
+			for (int i = 0, j = recipes.Length; i < j; i++)
+			{
+				if (typeof(CraftingRecipe).IsAssignableFrom(recipes[i]))
 				{
-					CraftingManager.Instance.Register((CraftingRecipe)Activator.CreateInstance(recipe));
+					CraftingManager.Instance.Register((CraftingRecipe)Activator.CreateInstance(recipes[i]));
 				}
 			}
 		}

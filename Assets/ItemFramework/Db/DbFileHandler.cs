@@ -43,11 +43,11 @@ namespace ItemFramework.Db
 			/// <param name="itemStacks">ItemStacks to be added</param>
 			public void AddItemStacks(params Guid?[] itemStacks)
 			{
-				foreach (Guid? itemStack in itemStacks)
+				for (int i = 0, j = itemStacks.Length; i < j; i++)
 				{
-					if (itemStack.HasValue && itemStack.Value != Guid.Empty)
+					if (itemStacks[i].HasValue && itemStacks[i].Value != Guid.Empty)
 					{
-						ItemStacks.Add(ItemStack.GetById(itemStack.Value));
+						ItemStacks.Add(ItemStack.GetById(itemStacks[i].Value));
 					}
 				}
 			}
@@ -58,9 +58,9 @@ namespace ItemFramework.Db
 			/// <param name="itemStacks">ItemStacks to be added</param>
 			public void AddItemStacks(params ItemStack[] itemStacks)
 			{
-				foreach (ItemStack itemStack in itemStacks)
+				for (int i = 0, j = itemStacks.Length; i < j; i++)
 				{
-					ItemStacks.Add(itemStack);
+					ItemStacks.Add(itemStacks[i]);
 				}
 			}
 
