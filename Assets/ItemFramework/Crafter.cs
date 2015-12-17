@@ -101,6 +101,50 @@ namespace ItemFramework
 			return recipes.FirstOrDefault(recipe => recipe.CheckRecipe(container));
 		}
 
-		
+		private bool DoAutoCraft(CraftingRecipe recipe, Container container)
+		{
+			if (recipe.CheckRecipe(container))
+			{
+				if (container.CanAdd(recipe.Output))
+				{
+					container.Add(CraftRecipe(recipe, container));
+					return true;
+				}
+			}
+
+			CraftingRecipe[] recipes = CraftingManager.Instance.GetRecipes((CraftingRecipe subRecipe) => {
+				// TODO: Make this work
+
+				bool found = false;
+
+				return found;
+			});
+
+			return false;
+		}
+
+		public ItemStack[] AutoCraft(CraftingRecipe endResult, Container container = null)
+		{
+			if (container == null)
+			{
+				container = input;
+			}
+
+			if (endResult.CheckRecipe(container))
+			{
+				if (container.CanAdd(endResult.Output))
+				{
+					container.Add(CraftRecipe(endResult, container));
+					return endResult.Output;
+				}
+			}
+
+			if (DoAutoCraft(endResult, container))
+			{
+				return endResult.Output;
+			}
+
+			return null;
+		}
 	}
 }
