@@ -53,7 +53,7 @@ public class Furnace : CrafterComponent
 				if (fuelStack != null && fuelStack.Amount > 0)
 				{
 					FurnaceRecipe recipe = (FurnaceRecipe)Crafter.GetFirstRecipe();
-					if (recipe != null && Crafter.output.CanAdd(recipe.Output))
+					if (recipe != null && ((FurnaceCrafter)Crafter).output.CanAdd(recipe.Output))
 					{
 						CurrentRecipe = recipe;
 						StartCoroutine("Burn", ((IBurnable)fuelStack.Item).BurnTime);
@@ -64,7 +64,7 @@ public class Furnace : CrafterComponent
 			else if (CurrentRecipe == null)
 			{
 				FurnaceRecipe recipe = (FurnaceRecipe)Crafter.GetFirstRecipe();
-				if (recipe != null && Crafter.output.CanAdd(recipe.Output))
+				if (recipe != null && ((FurnaceCrafter)Crafter).output.CanAdd(recipe.Output))
 				{
 					CurrentRecipe = recipe;
 				}
@@ -97,13 +97,13 @@ public class Furnace : CrafterComponent
 					ItemStack[] result = Crafter.CraftRecipe();
 					if (result != null)
 					{
-						Crafter.output.Add(result);
+						((FurnaceCrafter)Crafter).output.Add(result);
 					}
 					this.ProgressTimeElapsed -= this.CurrentRecipe.ProgressTime;
 					this.CurrentRecipe = null;
 
 					FurnaceRecipe recipe = (FurnaceRecipe)Crafter.GetFirstRecipe();
-					if (recipe != null && Crafter.output.CanAdd(recipe.Output))
+					if (recipe != null && ((FurnaceCrafter)Crafter).output.CanAdd(recipe.Output))
 					{
 						CurrentRecipe = recipe;
 					}
