@@ -3,6 +3,11 @@ using System.Linq;
 
 public class FurnaceCrafter : Crafter
 {
+	/// <summary>
+	/// Outgoing Container of crafting results
+	/// </summary>
+	public Container output;
+
 	public FurnaceCrafter()
 	{
 		input = new Container();

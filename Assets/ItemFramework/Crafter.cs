@@ -8,10 +8,6 @@ namespace ItemFramework
 		/// Incoming Container of crafting ingredients
 		/// </summary>
 		public Container input;
-		/// <summary>
-		/// Outgoing Container of crafting results
-		/// </summary>
-		public Container output;
 
 		/// <summary>
 		/// Get available CraftingRecipes for this Crafter

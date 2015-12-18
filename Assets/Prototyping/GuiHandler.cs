@@ -36,7 +36,7 @@ public class GuiHandler : MonoBehaviour, IMod
 	{
 		TinText.text = "Tin Ore : " + FurnaceScript.Crafter.input.Count(typeof(ItemTinOre)).ToString();
 		CopperText.text = "Copper Ore : " + FurnaceScript.Crafter.input.Count(typeof(ItemCopperOre)).ToString();
-		BronzeText.text = "Bronze Ingot : " + FurnaceScript.Crafter.output.Count(typeof(ItemBronzeIngot)).ToString();
+		BronzeText.text = "Bronze Ingot : " + ((FurnaceCrafter)FurnaceScript.Crafter).output.Count(typeof(ItemBronzeIngot)).ToString();
 		ItemStack fuelStack = FurnaceScript.fuel.Get(0);
 		FuelText.text = "Fuel : " + (fuelStack != null ? fuelStack.Amount : 0).ToString();
 		BurnProgressText.text = "Burn progress : " + Mathf.RoundToInt(FurnaceScript.BurnProgress * 100) + "%";
