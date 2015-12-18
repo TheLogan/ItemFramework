@@ -180,6 +180,16 @@ namespace ItemFramework
 		/// <returns>Excess or null if the whole ItemStack was added</returns>
 		public ItemStack Add(int index, ItemStack stack)
 		{
+			if (stack == null)
+			{
+				return null;
+			}
+
+			if (stack.IsTemp)
+			{
+				stack = stack.GetPersistant();
+			}
+
 			//If the index is null just add the new items
 			if (!Items[index].HasValue)
 			{
@@ -447,7 +457,7 @@ namespace ItemFramework
 			//If asked to remove part of the stack, create a new stack of the requested amount and remove said amount from the original stack
 			var returnStack = new ItemStack
 			{
-				Item = (Item)Activator.CreateInstance(tempStack.Item.GetType()),
+				Item = tempStack.Item,
 				Amount = amount
 			};
 
@@ -459,7 +469,7 @@ namespace ItemFramework
 				SaveToDb();
 			}
 
-			return tempStack;
+			return returnStack;
 		}
 
 		/// <summary>
@@ -474,9 +484,9 @@ namespace ItemFramework
 			for (int i = 0, j = stacks.Length; i < j; i++)
 			{
 				var stack = stacks[i];
-				if (stack.Amount <= 0) continue;
+				if (stack == null || stack.Amount <= 0) continue;
 
-				ItemStack removedItemStack = new ItemStack(stack.Item, 0);
+				ItemStack removedItemStack = new ItemStack(stack.Item, 1, false, true);
 
 				for (int k = 0, l = Items.Length; k < l; k++)
 				{
@@ -499,7 +509,9 @@ namespace ItemFramework
 					}
 				}
 
-				removedItemStacks.Add(removedItemStack);
+				removedItemStack.Amount--;
+
+				removedItemStacks.Add(removedItemStack.GetPersistant());
 			}
 
 			if (containerChanged && Changed != null)
@@ -509,6 +521,50 @@ namespace ItemFramework
 			}
 
 			return removedItemStacks.ToArray();
+		}
+
+		/// <summary>
+		/// Removes a set amount of a given item from the container
+		/// </summary>
+		/// <param name="item">Item type</param>
+		/// <param name="amount">Amount to remove</param>
+		/// <returns>ItemStack containing the removed items</returns>
+		public ItemStack Remove(Item item, int amount)
+		{
+			bool containerChanged = false;
+
+			ItemStack removedItemStack = new ItemStack(item, 1, false, true);
+
+			for (int k = 0, l = Items.Length; k < l; k++)
+			{
+				var tempStack = Get(k);
+				if (tempStack != null && tempStack.Item.GetType() == item.GetType())
+				{
+					int amountToRemove = Mathf.Min(tempStack.Amount, amount);
+					tempStack.Amount -= amountToRemove;
+					amount -= amountToRemove;
+					removedItemStack.Amount += amountToRemove;
+					containerChanged = true;
+					if (tempStack.Amount == 0)
+					{
+						Items[k] = null;
+					}
+					if (amount == 0)
+					{
+						break;
+					}
+				}
+			}
+
+			removedItemStack.Amount--;
+
+			if (containerChanged && Changed != null)
+			{
+				Changed.Invoke();
+				SaveToDb();
+			}
+
+			return removedItemStack.GetPersistant();
 		}
 
 

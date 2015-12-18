@@ -61,15 +61,18 @@ namespace ItemFramework
 					return false;
 				}
 
-				// If the item type doesn't match or there isn't enough items on the current position
-				// the recipe will fail
-				if (ingredient.Item.GetType() != inputStacks[inputCurrentPosition].Item.GetType())
+				if (ingredient != null)
 				{
-					return false;
-				}
-				if (ingredient.Amount > inputStacks[inputCurrentPosition].Amount)
-				{
-					return false;
+					// If the item type doesn't match or there isn't enough items on the current position
+					// the recipe will fail
+					if (ingredient.Item.GetType() != inputStacks[inputCurrentPosition].Item.GetType())
+					{
+						return false;
+					}
+					if (ingredient.Amount > inputStacks[inputCurrentPosition].Amount)
+					{
+						return false;
+					}
 				}
 
 				// If we are at the edge of the recipe jump to the next row of the recipe

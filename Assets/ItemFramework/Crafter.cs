@@ -37,7 +37,7 @@ namespace ItemFramework
 				container.Remove(ItemStack.CloneMultiple(true, recipe.RecipeIngredients));
 			}
 
-			return recipe.Output;
+			return ItemStack.GetPersistantMultiple(recipe.Output);
 		}
 
 		/// <summary>

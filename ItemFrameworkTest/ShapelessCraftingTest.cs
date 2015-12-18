@@ -34,9 +34,9 @@ namespace ItemFrameworkTest
 			var stick = FrameworkRegistry.GetItem("Stick");
 			var stone = FrameworkRegistry.GetItem("Stone");
 			
-			var stoneStack = new ItemStack(stone, 12, false, true);
-			var stoneStack2 = new ItemStack(stone, 12, false, true);
-			var stickStack = new ItemStack(stick, 12, false, true);
+			var stoneStack = new ItemStack(stone, 12);
+			var stoneStack2 = new ItemStack(stone, 12);
+			var stickStack = new ItemStack(stick, 12);
 			
 			var recipe = new TestSpadeRecipe();
 			
@@ -58,9 +58,9 @@ namespace ItemFrameworkTest
 			var stick = FrameworkRegistry.GetItem("Stick");
 			var stone = FrameworkRegistry.GetItem("Stone");
 
-			var stoneStack = new ItemStack(stone, 2, false, true);
-			var stoneStack2 = new ItemStack(stone, 2, false, true);
-			var stickStack = new ItemStack(stick, 12, false, true);
+			var stoneStack = new ItemStack(stone, 2);
+			var stoneStack2 = new ItemStack(stone, 2);
+			var stickStack = new ItemStack(stick, 12);
 
 			var recipe = new TestSpadeRecipe();
 
@@ -82,8 +82,8 @@ namespace ItemFrameworkTest
 			var stick = FrameworkRegistry.GetItem("Stick");
 			var stone = FrameworkRegistry.GetItem("Stone");
 
-			var stoneStack = new ItemStack(stone, 30, false, true);
-			var stickStack = new ItemStack(stick, 30, false, true);
+			var stoneStack = new ItemStack(stone, 30);
+			var stickStack = new ItemStack(stick, 30);
 
 			var recipe = new TestSpadeRecipe();
 
@@ -104,9 +104,9 @@ namespace ItemFrameworkTest
 			var stick = FrameworkRegistry.GetItem("Stick");
 			var stone = FrameworkRegistry.GetItem("Stone");
 
-			var stoneStack = new ItemStack(stone, 30, false, true);
-			var stickStack = new ItemStack(stick, 30, false, true);
-			var stickStack2 = new ItemStack(stick, 30, false, true);
+			var stoneStack = new ItemStack(stone, 30);
+			var stickStack = new ItemStack(stick, 30);
+			var stickStack2 = new ItemStack(stick, 30);
 
 			var recipe = new TestSpadeRecipe();
 
