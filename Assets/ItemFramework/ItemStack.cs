@@ -63,9 +63,20 @@ namespace ItemFramework
 			ItemStack[] clonedStacks = new ItemStack[stacks.Length];
 			for (int i = 0, j = stacks.Length; i < j; i++)
 			{
-				clonedStacks[i] = stacks[i].Clone(temp);
+				var stack = stacks[i];
+                clonedStacks[i] = stack == null ? null : stack.Clone(temp);
 			}
 			return clonedStacks;
+		}
+
+		public static ItemStack[] GetPersistantMultiple(params ItemStack[] stacks)
+		{
+			List<ItemStack> persistant = new List<ItemStack>();
+			for (int i = 0, j = stacks.Length; i < j; i++)
+			{
+				persistant.Add(stacks[i].GetPersistant());
+			}
+			return persistant.ToArray();
 		}
 
 		/// <summary>
